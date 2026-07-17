@@ -1,0 +1,11 @@
+# Keep the deploy upload small — none of these are needed to build the web app.
+assets/
+audio/
+docs/
+planning/
+_design_brief/
+*.zip
+*.png
+.DS_Store
+web/node_modules/
+web/.next/
