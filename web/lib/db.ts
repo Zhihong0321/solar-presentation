@@ -1,35 +1,39 @@
-// Server-only Postgres access via the pg-proxy HTTP endpoint.
-// Swap the internals here for a direct `pg` Pool later without touching callers.
+// Server-only Postgres access via a direct connection (Railway DATABASE_URL).
 import "server-only";
+import { Pool } from "pg";
 
-type SqlResponse = { rows: unknown[]; rowCount: number };
+// Cache the pool across dev hot-reloads to avoid exhausting connections.
+const globalForPg = globalThis as unknown as { _pgPool?: Pool };
+
+function getPool(): Pool {
+  if (globalForPg._pgPool) return globalForPg._pgPool;
+
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("Missing DATABASE_URL env var");
+  }
+
+  // Internal Railway / local connections don't use TLS; public endpoints do.
+  const isInternal = /railway\.internal|localhost|127\.0\.0\.1/.test(
+    connectionString,
+  );
+  const sslDisabled = process.env.PGSSL === "false";
+
+  const pool = new Pool({
+    connectionString,
+    ssl: isInternal || sslDisabled ? false : { rejectUnauthorized: false },
+    max: 5,
+    idleTimeoutMillis: 30_000,
+  });
+
+  globalForPg._pgPool = pool;
+  return pool;
+}
 
 export async function sql<T = Record<string, unknown>>(
   query: string,
   params: unknown[] = [],
 ): Promise<T[]> {
-  const base = process.env.PG_PROXY_URL;
-  const token = process.env.PG_PROXY_TOKEN;
-  const db = process.env.PG_DB_NAME || "prod_main";
-  if (!base || !token) {
-    throw new Error("Missing PG_PROXY_URL / PG_PROXY_TOKEN env vars");
-  }
-
-  const res = await fetch(new URL("/api/sql", base), {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ db_name: db, sql: query, params }),
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`DB query failed (${res.status}): ${body.slice(0, 300)}`);
-  }
-
-  const json = (await res.json()) as SqlResponse;
-  return json.rows as T[];
+  const res = await getPool().query(query, params);
+  return res.rows as T[];
 }
