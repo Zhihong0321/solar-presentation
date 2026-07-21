@@ -13,9 +13,27 @@ const rm = (n: number | null, dp = 0) =>
 
 const SLIDES = 8;
 
+// Narration clips per slide index, in play order. Files live in
+// web/public/narration/<clip>.wav (English) and <clip>_zh.wav (Chinese).
+const CLIPS: string[][] = [
+  ["s0"],
+  ["s1"],
+  ["s2"],
+  ["s3"],
+  ["s4a", "s4b"],
+  ["s5a", "s5b", "s5c"],
+  ["s6"],
+  ["s7"],
+];
+
+type Lang = "en" | "zh";
+
 export default function Deck({ data }: { data: PresentationData }) {
   const scroller = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  const [started, setStarted] = useState(false);
+  const [lang, setLang] = useState<Lang>("en");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const root = scroller.current;
@@ -39,10 +57,80 @@ export default function Deck({ data }: { data: PresentationData }) {
     return () => io.disconnect();
   }, []);
 
+  // Play the active slide's narration once the presentation has started.
+  // Each effect run owns its own `cancelled` flag, so scrolling to a new
+  // slide (or flipping language) stops the current clip and starts fresh.
+  useEffect(() => {
+    if (!started) return;
+    const seq = CLIPS[active] ?? [];
+    let cancelled = false;
+    let el: HTMLAudioElement | null = null;
+    let i = 0;
+    const playNext = () => {
+      if (cancelled || i >= seq.length) return;
+      const name = seq[i++];
+      el = new Audio(`/narration/${name}${lang === "zh" ? "_zh" : ""}.wav`);
+      audioRef.current = el;
+      el.addEventListener("ended", playNext);
+      el.play().catch(() => {
+        /* autoplay blocked or interrupted — ignore */
+      });
+    };
+    playNext();
+    return () => {
+      cancelled = true;
+      if (el) el.pause();
+      audioRef.current = null;
+    };
+  }, [active, started, lang]);
+
   const firstName = data.customerName?.split(" ")[0] ?? null;
 
   return (
     <div className="phone">
+      {!started ? (
+        <div className="start-overlay">
+          <div className="start-brand">Eternalgy Solar</div>
+          <h2 className="start-title">
+            Your Solar PV Proposal
+            {firstName ? (
+              <>
+                <br />
+                for {firstName}
+              </>
+            ) : null}
+          </h2>
+          <p className="start-sub">
+            A two-minute narrated walkthrough. Sound on.
+          </p>
+          <div className="start-lang">
+            <button
+              className={`lang-chip ${lang === "en" ? "on" : ""}`}
+              onClick={() => setLang("en")}
+            >
+              English
+            </button>
+            <button
+              className={`lang-chip ${lang === "zh" ? "on" : ""}`}
+              onClick={() => setLang("zh")}
+            >
+              中文
+            </button>
+          </div>
+          <button className="start-btn" onClick={() => setStarted(true)}>
+            ▶ Start presentation
+          </button>
+        </div>
+      ) : (
+        <button
+          className="lang-toggle"
+          onClick={() => setLang((l) => (l === "en" ? "zh" : "en"))}
+          aria-label="Toggle narration language"
+        >
+          {lang === "en" ? "EN · 中文" : "中文 · EN"}
+        </button>
+      )}
+
       <div className="progress-rail">
         {Array.from({ length: SLIDES }).map((_, i) => (
           <div key={i} className={`dot ${i === active ? "on" : ""}`} />
