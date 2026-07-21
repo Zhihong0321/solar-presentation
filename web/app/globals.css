@@ -1,16 +1,16 @@
 :root {
-  /* Light theme — per user preference for the solar deck. */
-  --bg: #f4f7fb;
-  --bg-elev: #ffffff;
-  --ink: #0f1e2e;
-  --ink-soft: #5a6b7b;
-  --line: #e4eaf1;
-  --brand: #f5a623; /* solar amber */
-  --brand-deep: #e07b00;
-  --accent: #1b9e77; /* eco green */
-  --accent-deep: #0f7a58;
-  --danger: #d4453b;
-  --shadow: 0 8px 30px rgba(15, 30, 46, 0.08);
+  /* Dark theme — matches the Solar Pitch.dc.html design (#08080D / gold #F2B23E). */
+  --bg: #08080d;
+  --bg-elev: #14141c;
+  --ink: #f5f3ee;
+  --ink-soft: #9c968a;
+  --line: #26262f;
+  --brand: #f2b23e; /* solar gold */
+  --brand-deep: #c77f14;
+  --accent: #2fbf8f; /* eco green, brightened for dark */
+  --accent-deep: #1b9e77;
+  --danger: #e5675d;
+  --shadow: 0 10px 34px rgba(0, 0, 0, 0.55);
   --radius: 20px;
 }
 
@@ -60,7 +60,7 @@ button {
   font-weight: 800;
   letter-spacing: -0.02em;
   font-size: 15px;
-  color: var(--brand-deep);
+  color: var(--brand);
   text-transform: uppercase;
 }
 .search-hero {
@@ -142,8 +142,8 @@ button {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--accent-deep);
-  background: rgba(27, 158, 119, 0.1);
+  color: var(--accent);
+  background: rgba(47, 191, 143, 0.14);
   padding: 2px 8px;
   border-radius: 999px;
 }
@@ -176,7 +176,7 @@ button {
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--brand-deep);
+  color: var(--brand);
   margin-bottom: 14px;
 }
 .slide h2 {
@@ -282,8 +282,8 @@ button {
 }
 .pill {
   display: inline-block;
-  background: rgba(245, 166, 35, 0.14);
-  color: var(--brand-deep);
+  background: rgba(242, 178, 62, 0.14);
+  color: var(--brand);
   font-weight: 700;
   font-size: 13px;
   padding: 6px 12px;
