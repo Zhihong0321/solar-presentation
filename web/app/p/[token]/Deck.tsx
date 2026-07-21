@@ -28,12 +28,124 @@ const CLIPS: string[][] = [
 
 type Lang = "en" | "zh";
 
+// On-screen copy in both languages. Chinese wording follows the audio
+// narration script from the original Solar Pitch deck.
+const COPY = {
+  en: {
+    startSub: "A two-minute narrated walkthrough. Sound on.",
+    startBtn: "▶ Start presentation",
+    proposalTitle: "Your Solar PV Proposal",
+    forName: (n: string) => `for ${n}`,
+    coverSub:
+      "In the next two minutes — exactly what solar does for your home, and why it matters who installs it.",
+    s1kicker: "Your bill",
+    s1h: "Before & after solar",
+    curBill: "Current bill / month",
+    newBillMo: "New bill / month",
+    save: (p: number) => `Save up to ${p}% every month`,
+    s2kicker: "The maths",
+    s2h: "How we calculated it",
+    genLabel: "Est. monthly generation",
+    usedDirect: "Used directly (daytime)",
+    exported: "Exported to grid",
+    newBill: "New bill",
+    sunPeak: (h: number) => `☀️ ${h} sun peak hours/day`,
+    s2note: "Calculated against your actual TNB tariff structure — rate by rate.",
+    s3kicker: "Your system",
+    s3h: "The package that does it",
+    panels: "Panels",
+    panelModel: "Panel model",
+    inverter: "Inverter",
+    s4kicker: "Why Eternalgy · 1",
+    s4h: "A forecast you can trust",
+    s4p1a:
+      "The most common trick in this industry is overclaimed savings. Even a small exaggeration — just RM50 a month — compounds to over ",
+    s4strong: "RM12,000",
+    s4p1b: " that never arrives, across your system's lifetime.",
+    s4p2a: "That's why we built ",
+    s4p2strong: "Malaysia's first solar simulator",
+    s4p2b: ". The numbers you just saw aren't estimates.",
+    s5kicker: "Why Eternalgy · 2",
+    s5h: "Built to survive 20 years",
+    yearsOnRoof: "years on your roof",
+    s5p: "Cheap components fail early — a dead system at best, a fire at worst. We insist on the highest standard of components, engineered for the full system life.",
+    s6kicker: "Why Eternalgy · 3",
+    s6h: "We don't disappear",
+    s6p: "Our in-house roof maintenance team responds to any roof issue, for the life of your system.",
+    projMonth: "Projects in a single month",
+    roofTypes: "Roof types",
+    everyType: "Every type in Malaysia",
+    certBy: "Certified by",
+    s7kicker: "The offer",
+    defaultPkg: "Your package",
+    pkgPrice: "Package price",
+    payback: (y: number) => `Payback in ~${y} years`,
+    cta: "Book your site assessment",
+    s7note:
+      "Panels, inverter, installation & warranties included. Everything after payback is pure savings.",
+  },
+  zh: {
+    startSub: "两分钟语音导览 — 请开启声音。",
+    startBtn: "▶ 开始演示",
+    proposalTitle: "您的太阳能发电方案",
+    forName: (n: string) => `为 ${n} 准备`,
+    coverSub:
+      "接下来的两分钟，为您说明太阳能到底能为您的家带来什么，以及为什么选择安装的人很重要。",
+    s1kicker: "您的电费",
+    s1h: "安装前后对比",
+    curBill: "目前每月电费",
+    newBillMo: "安装后每月电费",
+    save: (p: number) => `每月最高可省 ${p}%`,
+    s2kicker: "计算方式",
+    s2h: "我们如何计算",
+    genLabel: "预计每月发电量",
+    usedDirect: "白天直接使用",
+    exported: "输出至电网换取回扣",
+    newBill: "新电费",
+    sunPeak: (h: number) => `☀️ 每日约 ${h} 小时日照高峰`,
+    s2note: "根据您实际的 TNB 电费级距，逐级精算。",
+    s3kicker: "您的系统",
+    s3h: "为您配置的方案",
+    panels: "太阳能板",
+    panelModel: "板型号",
+    inverter: "逆变器",
+    s4kicker: "为什么选择 Eternalgy · 1",
+    s4h: "值得信赖的预测",
+    s4p1a:
+      "这个行业最常见的手法，就是夸大节省金额。哪怕每月只多算 RM50，在系统的使用年限内，累积起来也会是超过 ",
+    s4strong: "RM12,000",
+    s4p1b: " 永远不会兑现的差距。",
+    s4p2a: "这就是为什么，我们打造了 ",
+    s4p2strong: "马来西亚首创的太阳能模拟系统",
+    s4p2b: "。您刚才看到的数字，绝非随口估算。",
+    s5kicker: "为什么选择 Eternalgy · 2",
+    s5h: "为二十年使用而打造",
+    yearsOnRoof: "年屋顶寿命",
+    s5p: "廉价配件容易提早损坏 — 轻则系统瘫痪，重则引发火患。我们坚持采用最高标准的配件，专为完整的系统寿命而设计。",
+    s6kicker: "为什么选择 Eternalgy · 3",
+    s6h: "我们不会消失",
+    s6p: "我们拥有自己的屋顶维护团队，在系统的整个使用年限内，随时处理任何屋顶问题。",
+    projMonth: "单月完成项目",
+    roofTypes: "屋顶类型",
+    everyType: "马来西亚各种屋顶",
+    certBy: "认证机构",
+    s7kicker: "报价",
+    defaultPkg: "您的方案",
+    pkgPrice: "方案价格",
+    payback: (y: number) => `约 ${y} 年回本`,
+    cta: "预约免费屋顶评估",
+    s7note:
+      "包含太阳能板、逆变器、安装工程与所有保固。回本之后的每一分钱，都是纯粹的节省。",
+  },
+};
+
 export default function Deck({ data }: { data: PresentationData }) {
   const scroller = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [started, setStarted] = useState(false);
   const [lang, setLang] = useState<Lang>("en");
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const t = COPY[lang];
 
   useEffect(() => {
     const root = scroller.current;
@@ -92,17 +204,15 @@ export default function Deck({ data }: { data: PresentationData }) {
         <div className="start-overlay">
           <div className="start-brand">Eternalgy Solar</div>
           <h2 className="start-title">
-            Your Solar PV Proposal
+            {t.proposalTitle}
             {firstName ? (
               <>
                 <br />
-                for {firstName}
+                {t.forName(firstName)}
               </>
             ) : null}
           </h2>
-          <p className="start-sub">
-            A two-minute narrated walkthrough. Sound on.
-          </p>
+          <p className="start-sub">{t.startSub}</p>
           <div className="start-lang">
             <button
               className={`lang-chip ${lang === "en" ? "on" : ""}`}
@@ -118,7 +228,7 @@ export default function Deck({ data }: { data: PresentationData }) {
             </button>
           </div>
           <button className="start-btn" onClick={() => setStarted(true)}>
-            ▶ Start presentation
+            {t.startBtn}
           </button>
         </div>
       ) : (
@@ -144,17 +254,16 @@ export default function Deck({ data }: { data: PresentationData }) {
             Eternalgy Solar
           </div>
           <h2 data-reveal>
-            Your Solar PV Proposal
+            {t.proposalTitle}
             {firstName ? (
               <>
                 <br />
-                for {firstName}
+                {t.forName(firstName)}
               </>
             ) : null}
           </h2>
           <p className="row-k" data-reveal>
-            In the next two minutes — exactly what solar does for your home, and
-            why it matters who installs it.
+            {t.coverSub}
           </p>
           {data.invoiceNumber ? (
             <span className="pill" data-reveal>
@@ -166,22 +275,22 @@ export default function Deck({ data }: { data: PresentationData }) {
         {/* 1 — Bill before vs after */}
         <section className="slide" data-idx={1}>
           <div className="slide-kicker" data-reveal>
-            Your bill
+            {t.s1kicker}
           </div>
-          <h2 data-reveal>Before &amp; after solar</h2>
+          <h2 data-reveal>{t.s1h}</h2>
           <div className="card" data-reveal>
-            <div className="card-label">Current bill / month</div>
+            <div className="card-label">{t.curBill}</div>
             <div className="stat-big">{rm(data.currentBill)}</div>
           </div>
           <div className="card" data-reveal>
-            <div className="card-label">New bill / month</div>
+            <div className="card-label">{t.newBillMo}</div>
             <div className="stat-big" style={{ color: "var(--accent-deep)" }}>
               {rm(data.newBill)}
             </div>
           </div>
           {data.savingPercent !== null ? (
             <span className="savings-badge" data-reveal>
-              Save up to {Math.round(data.savingPercent)}% every month
+              {t.save(Math.round(data.savingPercent))}
             </span>
           ) : null}
         </section>
@@ -189,12 +298,12 @@ export default function Deck({ data }: { data: PresentationData }) {
         {/* 2 — How we calculated it */}
         <section className="slide" data-idx={2}>
           <div className="slide-kicker" data-reveal>
-            The maths
+            {t.s2kicker}
           </div>
-          <h2 data-reveal>How we calculated it</h2>
+          <h2 data-reveal>{t.s2h}</h2>
           <div className="card" data-reveal>
             <div className="row">
-              <span className="row-k">Est. monthly generation</span>
+              <span className="row-k">{t.genLabel}</span>
               <span className="row-v">
                 {data.monthlyGenerationKwh !== null
                   ? `${data.monthlyGenerationKwh.toLocaleString()} kWh`
@@ -202,7 +311,7 @@ export default function Deck({ data }: { data: PresentationData }) {
               </span>
             </div>
             <div className="row">
-              <span className="row-k">Used directly (daytime)</span>
+              <span className="row-k">{t.usedDirect}</span>
               <span className="row-v">
                 {data.morningUsagePercent !== null
                   ? `${Math.round(data.morningUsagePercent)}%`
@@ -210,7 +319,7 @@ export default function Deck({ data }: { data: PresentationData }) {
               </span>
             </div>
             <div className="row">
-              <span className="row-k">Exported to grid</span>
+              <span className="row-k">{t.exported}</span>
               <span className="row-v">
                 {data.morningUsagePercent !== null
                   ? `${Math.round(100 - data.morningUsagePercent)}%`
@@ -218,7 +327,7 @@ export default function Deck({ data }: { data: PresentationData }) {
               </span>
             </div>
             <div className="row">
-              <span className="row-k">New bill</span>
+              <span className="row-k">{t.newBill}</span>
               <span className="row-v" style={{ color: "var(--accent-deep)" }}>
                 {rm(data.newBill)}
               </span>
@@ -226,20 +335,20 @@ export default function Deck({ data }: { data: PresentationData }) {
           </div>
           {data.sunPeakHour !== null ? (
             <span className="pill" data-reveal>
-              ☀️ {data.sunPeakHour} sun peak hours/day
+              {t.sunPeak(data.sunPeakHour)}
             </span>
           ) : null}
           <p className="muted-note" data-reveal>
-            Calculated against your actual TNB tariff structure — rate by rate.
+            {t.s2note}
           </p>
         </section>
 
         {/* 3 — Your package */}
         <section className="slide" data-idx={3}>
           <div className="slide-kicker" data-reveal>
-            Your system
+            {t.s3kicker}
           </div>
-          <h2 data-reveal>The package that does it</h2>
+          <h2 data-reveal>{t.s3h}</h2>
           <div data-reveal>
             <span className="stat-big">
               {data.systemKwp !== null ? data.systemKwp : "—"}
@@ -248,18 +357,18 @@ export default function Deck({ data }: { data: PresentationData }) {
           </div>
           <div className="card" data-reveal style={{ marginTop: 18 }}>
             <div className="row">
-              <span className="row-k">Panels</span>
+              <span className="row-k">{t.panels}</span>
               <span className="row-v">
                 {data.panelQty ?? "—"} ×{" "}
                 {data.panelWatt ? `${data.panelWatt}W` : ""}
               </span>
             </div>
             <div className="row">
-              <span className="row-k">Panel model</span>
+              <span className="row-k">{t.panelModel}</span>
               <span className="row-v">{data.panelName ?? "—"}</span>
             </div>
             <div className="row">
-              <span className="row-k">Inverter</span>
+              <span className="row-k">{t.inverter}</span>
               <span className="row-v">{data.inverterName ?? "—"}</span>
             </div>
           </div>
@@ -273,59 +382,56 @@ export default function Deck({ data }: { data: PresentationData }) {
         {/* 4 — Forecast you can trust */}
         <section className="slide" data-idx={4}>
           <div className="slide-kicker" data-reveal>
-            Why Eternalgy · 1
+            {t.s4kicker}
           </div>
-          <h2 data-reveal>A forecast you can trust</h2>
+          <h2 data-reveal>{t.s4h}</h2>
           <p className="row-k" data-reveal>
-            The most common trick in this industry is overclaimed savings. Even a
-            small exaggeration — just RM50 a month — compounds to over{" "}
-            <strong style={{ color: "var(--danger)" }}>RM12,000</strong> that
-            never arrives, across your system&apos;s lifetime.
+            {t.s4p1a}
+            <strong style={{ color: "var(--danger)" }}>{t.s4strong}</strong>
+            {t.s4p1b}
           </p>
           <p className="row-k" data-reveal style={{ marginTop: 14 }}>
-            That&apos;s why we built <strong>Malaysia&apos;s first solar
-            simulator</strong>. The numbers you just saw aren&apos;t estimates.
+            {t.s4p2a}
+            <strong>{t.s4p2strong}</strong>
+            {t.s4p2b}
           </p>
         </section>
 
         {/* 5 — Built to survive 20 years */}
         <section className="slide" data-idx={5}>
           <div className="slide-kicker" data-reveal>
-            Why Eternalgy · 2
+            {t.s5kicker}
           </div>
-          <h2 data-reveal>Built to survive 20 years</h2>
+          <h2 data-reveal>{t.s5h}</h2>
           <div data-reveal>
             <span className="stat-big">15–20</span>{" "}
-            <span className="stat-unit">years on your roof</span>
+            <span className="stat-unit">{t.yearsOnRoof}</span>
           </div>
           <p className="row-k" data-reveal style={{ marginTop: 16 }}>
-            Cheap components fail early — a dead system at best, a fire at worst.
-            We insist on the highest standard of components, engineered for the
-            full system life.
+            {t.s5p}
           </p>
         </section>
 
         {/* 6 — We don't disappear */}
         <section className="slide" data-idx={6}>
           <div className="slide-kicker" data-reveal>
-            Why Eternalgy · 3
+            {t.s6kicker}
           </div>
-          <h2 data-reveal>We don&apos;t disappear</h2>
+          <h2 data-reveal>{t.s6h}</h2>
           <p className="row-k" data-reveal>
-            Our in-house roof maintenance team responds to any roof issue, for
-            the life of your system.
+            {t.s6p}
           </p>
           <div className="card" data-reveal style={{ marginTop: 16 }}>
             <div className="row">
-              <span className="row-k">Projects in a single month</span>
+              <span className="row-k">{t.projMonth}</span>
               <span className="row-v">140+</span>
             </div>
             <div className="row">
-              <span className="row-k">Roof types</span>
-              <span className="row-v">Every type in Malaysia</span>
+              <span className="row-k">{t.roofTypes}</span>
+              <span className="row-v">{t.everyType}</span>
             </div>
             <div className="row">
-              <span className="row-k">Certified by</span>
+              <span className="row-k">{t.certBy}</span>
               <span className="row-v">SEDA · CIDB · MyHIJAU</span>
             </div>
           </div>
@@ -334,9 +440,9 @@ export default function Deck({ data }: { data: PresentationData }) {
         {/* 7 — The package & the ask */}
         <section className="slide" data-idx={7}>
           <div className="slide-kicker" data-reveal>
-            The offer
+            {t.s7kicker}
           </div>
-          <h2 data-reveal>{data.packageName ?? "Your package"}</h2>
+          <h2 data-reveal>{data.packageName ?? t.defaultPkg}</h2>
           <div className="card" data-reveal>
             {data.listPrice !== null &&
             data.finalPrice !== null &&
@@ -345,18 +451,17 @@ export default function Deck({ data }: { data: PresentationData }) {
                 {rm(data.listPrice)}
               </div>
             ) : null}
-            <div className="card-label">Package price</div>
+            <div className="card-label">{t.pkgPrice}</div>
             <div className="stat-big">{rm(data.finalPrice)}</div>
             {data.paybackYears !== null ? (
-              <span className="pill">Payback in ~{data.paybackYears} years</span>
+              <span className="pill">{t.payback(data.paybackYears)}</span>
             ) : null}
           </div>
           <button className="cta" data-reveal>
-            Book your site assessment
+            {t.cta}
           </button>
           <p className="muted-note" data-reveal>
-            Panels, inverter, installation &amp; warranties included. Everything
-            after payback is pure savings.
+            {t.s7note}
           </p>
         </section>
       </div>
