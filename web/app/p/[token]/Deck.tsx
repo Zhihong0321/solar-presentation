@@ -95,22 +95,24 @@ export default function Deck({ data }: { data: PresentationData }) {
 
       let audioSrc = `/narration/${name}${lang === "zh" ? "_zh" : ""}.mp3`;
 
-      // If slide numbers are customized for this invoice, generate/fetch on-the-fly TTS
+      // If slide numbers are customized for this invoice, fetch on-the-fly TTS
       if (!spoken.isDefault) {
-        try {
-          const res = await fetch("/api/tts", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: spoken.text }),
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.url) {
-              audioSrc = data.url;
-            }
-          }
-        } catch (e) {
-          console.warn("Dynamic TTS fetch failed, falling back to static audio", e);
+        const res = await fetch("/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: spoken.text }),
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          console.error("TTS generation failed:", errData.error || res.statusText);
+          return; // Strictly stop playback rather than playing wrong default audio numbers!
+        }
+        const ttsJson = await res.json();
+        if (ttsJson.url) {
+          audioSrc = ttsJson.url;
+        } else {
+          console.error("TTS API did not return a valid audio URL");
+          return;
         }
       }
 

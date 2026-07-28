@@ -3,14 +3,11 @@ import fs from "fs";
 import path from "path";
 import { getStorageDir, getStorageFilePath, isStorageAvailable } from "./storage";
 
-const HARDCODED_MINIMAX_KEY =
-  "sk-cp-Mn15gRFLBQz1Rb5roxtNLoet9MDnGLTiET3I2YmebEWr4WOvgQLOei3D48o2HIrm36pcF8aA1shygKt1WMWrNy-ca5Cr1cij4MxOOTHZkRBmfPLKBpXBMuo";
-
 function getMinimaxApiKey(): string {
   if (process.env.MINIMAX_API_KEY) {
     return process.env.MINIMAX_API_KEY;
   }
-  // Hermes vault fallback
+  // Hermes vault check (local dev)
   const vaultPath = "C:\\Users\\Eternalgy\\.hermes\\vault.json";
   try {
     if (fs.existsSync(vaultPath)) {
@@ -25,7 +22,9 @@ function getMinimaxApiKey(): string {
   } catch (err) {
     console.warn("Vault access error:", err);
   }
-  return HARDCODED_MINIMAX_KEY;
+  throw new Error(
+    "MINIMAX_API_KEY environment variable is missing. Please set MINIMAX_API_KEY in your Railway environment variables.",
+  );
 }
 
 export async function getOrGenerateTTS(
