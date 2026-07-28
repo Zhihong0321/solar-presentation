@@ -3,7 +3,10 @@ import fs from "fs";
 import path from "path";
 import { getStorageDir, getStorageFilePath, isStorageAvailable } from "./storage";
 
-function getMinimaxApiKey(): string | null {
+const HARDCODED_MINIMAX_KEY =
+  "sk-cp-Mn15gRFLBQz1Rb5roxtNLoet9MDnGLTiET3I2YmebEWr4WOvgQLOei3D48o2HIrm36pcF8aA1shygKt1WMWrNy-ca5Cr1cij4MxOOTHZkRBmfPLKBpXBMuo";
+
+function getMinimaxApiKey(): string {
   if (process.env.MINIMAX_API_KEY) {
     return process.env.MINIMAX_API_KEY;
   }
@@ -22,7 +25,7 @@ function getMinimaxApiKey(): string | null {
   } catch (err) {
     console.warn("Vault access error:", err);
   }
-  return null;
+  return HARDCODED_MINIMAX_KEY;
 }
 
 export async function getOrGenerateTTS(
