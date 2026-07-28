@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { PresentationData } from "@/lib/invoice";
+import { getSlideSpokenText } from "@/lib/numberToWords";
 import ChineseDeck from "./ChineseDeck";
 import EnglishDeck from "./EnglishDeck";
 import "./DeckCn.css";
@@ -80,18 +81,49 @@ export default function Deck({ data }: { data: PresentationData }) {
     let audio: HTMLAudioElement | null = null;
     let index = 0;
 
-    const playNext = () => {
+    const playNext = async () => {
       if (cancelled || index >= sequence.length) return;
 
+      const subIndex = index;
       const name = sequence[index++];
-      const basePath = `/narration/${name}${lang === "zh" ? "_zh" : ""}`;
-      audio = new Audio(`${basePath}.mp3`);
+      const spoken = getSlideSpokenText({
+        slideIndex: active,
+        clipSubIndex: subIndex,
+        data,
+        lang,
+      });
+
+      let audioSrc = `/narration/${name}${lang === "zh" ? "_zh" : ""}.mp3`;
+
+      // If slide numbers are customized for this invoice, generate/fetch on-the-fly TTS
+      if (!spoken.isDefault) {
+        try {
+          const res = await fetch("/api/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: spoken.text }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.url) {
+              audioSrc = data.url;
+            }
+          }
+        } catch (e) {
+          console.warn("Dynamic TTS fetch failed, falling back to static audio", e);
+        }
+      }
+
+      if (cancelled) return;
+
+      audio = new Audio(audioSrc);
       audioRef.current = audio;
       audio.addEventListener("ended", playNext);
       audio.onerror = () => {
         // Fallback to .wav if .mp3 is not found
         if (!cancelled && audio) {
-          const fallback = new Audio(`${basePath}.wav`);
+          const fallbackPath = `/narration/${name}${lang === "zh" ? "_zh" : ""}.wav`;
+          const fallback = new Audio(fallbackPath);
           audioRef.current = fallback;
           fallback.addEventListener("ended", playNext);
           fallback.play().catch(() => {});
@@ -108,7 +140,7 @@ export default function Deck({ data }: { data: PresentationData }) {
       if (audio) audio.pause();
       audioRef.current = null;
     };
-  }, [active, started, lang]);
+  }, [active, started, lang, data]);
 
   const firstName = data.customerName?.split(" ")[0] ?? null;
 
