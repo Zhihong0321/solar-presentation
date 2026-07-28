@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071a12">
+  <meta name="description" content="为什么精准的太阳能省电模拟比最高的预测省电数字更重要。">
+  <title>为什么省电准确度至关重要 | Eternalgy</title>
+  <style>
+    :root {
+      --ink: #071a12;
+      --ink-soft: #153426;
+      --paper: #f6f4ee;
+      --paper-2: #eeece4;
+      --white: #ffffff;
+      --green: #22c978;
+      --green-deep: #087044;
+      --green-pale: #dff8ea;
+      --lime: #c7f36b;
+      --amber: #ffbd4a;
+      --red: #ff675f;
+      --muted: #66756d;
+      --line: rgba(7, 26, 18, 0.13);
+      --stage: 440px;
+      --ease: cubic-bezier(.2,.72,.2,1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: #03100b;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(34, 201, 120, 0.2), transparent 34rem),
+        #03100b;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    button { font: inherit; }
+
+    .deck {
+      width: min(100%, var(--stage));
+      margin: 0 auto;
+      height: 100svh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-snap-type: y mandatory;
+      overscroll-behavior-y: contain;
+      scrollbar-width: none;
+      background: var(--paper);
+      box-shadow: 0 0 80px rgba(0, 0, 0, 0.48);
+      position: relative;
+    }
+
+    .deck::-webkit-scrollbar { display: none; }
+
+    .slide {
+      min-height: 100svh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      padding: max(28px, env(safe-area-inset-top)) 24px max(88px, calc(env(safe-area-inset-bottom) + 72px));
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      isolation: isolate;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .slide.light::before {
+      background:
+        linear-gradient(rgba(7, 26, 18, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(7, 26, 18, 0.035) 1px, transparent 1px),
+        var(--paper);
+      background-size: 28px 28px;
+    }
+
+    .slide.dark {
+      color: var(--white);
+      background: var(--ink);
+    }
+
+    .slide.dark::before {
+      background:
+        radial-gradient(circle at 80% 18%, rgba(34, 201, 120, 0.22), transparent 17rem),
+        radial-gradient(circle at 0% 90%, rgba(199, 243, 107, 0.09), transparent 20rem),
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        var(--ink);
+      background-size: auto, auto, 28px 28px, 28px 28px, auto;
+    }
+
+    .slide.green {
+      color: var(--ink);
+      background: var(--green);
+    }
+
+    .slide.green::before {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(255,255,255,.32), transparent 18rem),
+        linear-gradient(rgba(7, 26, 18, 0.065) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(7, 26, 18, 0.065) 1px, transparent 1px);
+      background-size: auto, 28px 28px, 28px 28px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 23px;
+      height: 23px;
+      border-radius: 50%;
+      background: var(--green);
+      position: relative;
+      box-shadow: inset 0 0 0 5px rgba(7, 26, 18, .16);
+    }
+
+    .dark .brand-mark { box-shadow: inset 0 0 0 5px rgba(255,255,255,.22); }
+    .green .brand-mark { background: var(--ink); box-shadow: inset 0 0 0 5px rgba(255,255,255,.22); }
+
+    .slide-no { opacity: .55; }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--green-deep);
+      font-size: 11px;
+      line-height: 1.3;
+      font-weight: 850;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .dark .eyebrow { color: var(--lime); }
+    .green .eyebrow { color: rgba(7, 26, 18, .66); }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1, h2 {
+      margin-bottom: 18px;
+      letter-spacing: -.02em;
+      line-height: 1.15;
+      text-wrap: balance;
+    }
+
+    h1 {
+      font-size: clamp(40px, 11vw, 54px);
+      max-width: 10ch;
+    }
+
+    h2 {
+      font-size: clamp(32px, 9vw, 42px);
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 17px;
+      line-height: 1.3;
+      letter-spacing: -.01em;
+    }
+
+    .lead {
+      max-width: 22em;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.62;
+    }
+
+    .dark .lead { color: rgba(255,255,255,.68); }
+    .green .lead { color: rgba(7,26,18,.76); }
+
+    .accent { color: var(--green); }
+    .dark .accent { color: var(--lime); }
+    .green .accent { color: var(--ink); text-decoration: underline; text-decoration-thickness: .09em; text-underline-offset: .1em; }
+
+    .hero-copy { margin: auto 0; padding: 24px 0; }
+
+    .hero-statement {
+      padding: 16px 18px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 18px;
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(8px);
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(255,255,255,.76);
+    }
+
+    .hero-statement strong { color: var(--white); }
+
+    .sun-orbit {
+      width: 184px;
+      height: 184px;
+      position: absolute;
+      top: 17%;
+      right: -76px;
+      border: 1px solid rgba(199, 243, 107, .3);
+      border-radius: 50%;
+      animation: orbit 12s linear infinite;
+      z-index: -1;
+    }
+
+    .sun-orbit::before {
+      content: "";
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      top: 10px;
+      left: 26px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 36px rgba(199, 243, 107, .65);
+    }
+
+    .compare {
+      display: grid;
+      gap: 12px;
+      margin: 28px 0;
+    }
+
+    .compare-card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 19px;
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 12px 32px rgba(7,26,18,.06);
+    }
+
+    .compare-card.bad { border-left: 5px solid var(--red); }
+    .compare-card.good { border-left: 5px solid var(--green); background: var(--green-pale); }
+
+    .compare-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .13em;
+    }
+
+    .formula {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 820;
+      font-size: 18px;
+      letter-spacing: -.01em;
+    }
+
+    .formula .operator { color: var(--muted); font-weight: 500; }
+
+    .truth-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 99px;
+      background: var(--ink);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .truth-tag i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(34,201,120,.16);
+    }
+
+    .math-stage {
+      margin: auto 0;
+      text-align: center;
+    }
+
+    .math-line {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px 9px;
+      margin: 20px -8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .math-num {
+      font-size: 44px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+    }
+
+    .math-unit {
+      color: rgba(255,255,255,.56);
+      font-size: 12px;
+      font-weight: 760;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .math-times { color: var(--green); font-size: 24px; font-weight: 500; }
+
+    .counter-wrap {
+      margin: 20px 0 12px;
+      padding: 24px 12px;
+      border-radius: 28px;
+      background: var(--green);
+      color: var(--ink);
+      box-shadow: 0 24px 60px rgba(34,201,120,.16);
+    }
+
+    .counter-label {
+      margin-bottom: 7px;
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .counter {
+      font-size: clamp(52px, 16vw, 70px);
+      font-weight: 920;
+      line-height: .95;
+      letter-spacing: -.03em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .fineprint {
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.6;
+      color: rgba(255,255,255,.5);
+    }
+
+    .flow {
+      display: grid;
+      gap: 9px;
+      margin: 24px 0 16px;
+      position: relative;
+    }
+
+    .flow::before {
+      content: "";
+      position: absolute;
+      top: 34px;
+      bottom: 34px;
+      left: 22px;
+      width: 2px;
+      background: linear-gradient(var(--green), rgba(34,201,120,.15));
+      z-index: -1;
+    }
+
+    .flow-step {
+      display: grid;
+      grid-template-columns: 45px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 64px;
+      padding: 10px 13px 10px 8px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.82);
+    }
+
+    .flow-icon {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--green-deep);
+      background: var(--green-pale);
+    }
+
+    .flow-icon svg { width: 20px; height: 20px; }
+
+    .flow-step p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .flow-arrow { color: var(--green-deep); font-size: 17px; }
+
+    .bill-compare {
+      display: grid;
+      grid-template-columns: 1fr 34px 1fr;
+      align-items: center;
+      gap: 6px;
+      margin: 28px 0 22px;
+    }
+
+    .bill {
+      min-height: 218px;
+      padding: 17px;
+      border-radius: 22px;
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: 0 16px 40px rgba(0,0,0,.16);
+      position: relative;
+    }
+
+    .bill::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: -6px;
+      height: 12px;
+      background: linear-gradient(135deg, var(--white) 6px, transparent 0) 0 0/12px 12px repeat-x;
+    }
+
+    .bill-label {
+      font-size: 9px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      font-weight: 850;
+      color: var(--muted);
+    }
+
+    .bill-amount {
+      margin: 18px 0;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -.02em;
+    }
+
+    .bill-lines { display: grid; gap: 7px; }
+    .bill-line { height: 5px; border-radius: 99px; background: var(--paper-2); overflow: hidden; }
+    .bill-line span { display: block; height: 100%; border-radius: inherit; background: var(--green); }
+    .bill-before .bill-line span { background: #b4bdb8; }
+    .bill-arrow { color: var(--lime); font-size: 25px; text-align: center; animation: nudge 1.8s ease-in-out infinite; }
+
+    .under-note {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 14px 15px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 16px;
+      color: rgba(255,255,255,.68);
+      background: rgba(255,255,255,.05);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .under-note b { color: var(--white); }
+
+    .risk-list {
+      display: grid;
+      gap: 10px;
+      margin: 24px 0;
+    }
+
+    .risk {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(7,26,18,.14);
+      background: rgba(255,255,255,.62);
+    }
+
+    .risk-index {
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: var(--ink);
+      color: var(--lime);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .risk p { margin: 2px 0 0; color: rgba(7,26,18,.62); font-size: 12px; line-height: 1.5; }
+
+    .quote {
+      margin: auto 0;
+      position: relative;
+    }
+
+    .quote-mark {
+      position: absolute;
+      top: -65px;
+      left: -8px;
+      font-family: Georgia, serif;
+      font-size: 148px;
+      line-height: 1;
+      color: rgba(7,26,18,.09);
+    }
+
+    .quote h2 { position: relative; font-size: clamp(34px, 9.5vw, 46px); }
+
+    .question-grid {
+      margin-top: 30px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .question {
+      display: flex;
+      gap: 11px;
+      align-items: center;
+      padding: 13px 15px;
+      border-radius: 15px;
+      background: rgba(7,26,18,.09);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .question span {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      background: var(--ink);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .cta-box {
+      margin-top: 26px;
+      padding: 18px;
+      border-radius: 20px;
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .cta-box small {
+      display: block;
+      margin-bottom: 6px;
+      color: rgba(255,255,255,.54);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .cta-box strong { font-size: 16px; line-height: 1.5; }
+
+    .continue-btn {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 20px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--white);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 850;
+      letter-spacing: -.01em;
+      box-shadow: 0 16px 34px rgba(7,26,18,.28);
+      transition: transform .2s ease;
+    }
+
+    .continue-btn:active { transform: scale(.97); }
+    .continue-btn-arrow { transition: transform .2s ease; }
+    .continue-btn:hover .continue-btn-arrow { transform: translateX(3px); }
+
+    .nav {
+      position: fixed;
+      z-index: 20;
+      left: 50%;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      width: min(calc(100% - 24px), 416px);
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      gap: 10px;
+      align-items: center;
+      padding: 8px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 18px;
+      background: rgba(7,26,18,.9);
+      box-shadow: 0 16px 40px rgba(0,0,0,.25);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav button {
+      width: 44px;
+      height: 38px;
+      border: 0;
+      border-radius: 12px;
+      color: var(--white);
+      background: rgba(255,255,255,.08);
+      cursor: pointer;
+      font-size: 18px;
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .nav button:active { transform: scale(.94); }
+    .nav button:disabled { opacity: .28; cursor: default; }
+
+    .progress-track {
+      height: 4px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: rgba(255,255,255,.13);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 14.285%;
+      border-radius: inherit;
+      background: var(--green);
+      transition: width .45s var(--ease);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .7s var(--ease), transform .7s var(--ease);
+    }
+
+    .is-active .reveal { opacity: 1; transform: translateY(0); }
+    .is-active .delay-1 { transition-delay: .08s; }
+    .is-active .delay-2 { transition-delay: .16s; }
+    .is-active .delay-3 { transition-delay: .24s; }
+    .is-active .delay-4 { transition-delay: .32s; }
+
+    @keyframes orbit { to { transform: rotate(360deg); } }
+    @keyframes nudge { 0%,100% { transform: translateX(-2px); } 50% { transform: translateX(3px); } }
+
+    @media (max-height: 690px) {
+      .slide { padding-top: 22px; }
+      h1 { font-size: 40px; }
+      h2 { font-size: 30px; }
+      .compare { margin: 16px 0; }
+      .compare-card { padding: 15px; }
+      .flow { gap: 6px; margin: 15px 0 10px; }
+      .flow-step { min-height: 54px; }
+      .bill { min-height: 185px; }
+      .risk-list { gap: 7px; margin: 16px 0; }
+      .risk { padding: 10px 12px; }
+    }
+
+    @media (min-width: 700px) {
+      body { padding: 0 18px; }
+      .deck { border-left: 1px solid rgba(255,255,255,.1); border-right: 1px solid rgba(255,255,255,.1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck" aria-label="Eternalgy 太阳能省电准确度简报">
+    <section class="slide dark is-active" data-slide="1" aria-labelledby="slide-1-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">01 / 07</div>
+      </div>
+
+      <div class="sun-orbit" aria-hidden="true"></div>
+
+      <div class="hero-copy">
+        <p class="eyebrow reveal delay-1">购买太阳能之前</p>
+        <h1 id="slide-1-title" class="reveal delay-2">最大的省电数字<span class="accent">不是</span>最好的数字。</h1>
+        <p class="lead reveal delay-3">最好的数字,是最接近你实际会在 TNB 账单上看到的省电金额。</p>
+      </div>
+
+      <div class="hero-statement reveal delay-4">
+        <strong>太阳能是一项长达 20 年的决定。</strong><br>
+        准确度的重要性,在销售简报结束后依然持续。
+      </div>
+    </section>
+
+    <section class="slide light" data-slide="2" aria-labelledby="slide-2-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">02 / 07</div>
+      </div>
+
+      <div>
+        <p class="eyebrow reveal delay-1">预测 vs 计算</p>
+        <h2 id="slide-2-title" class="reveal delay-2">过高的估算容易推销,却难以承受。</h2>
+
+        <div class="compare">
+          <article class="compare-card bad reveal delay-2">
+            <div class="compare-label"><span>捷径估算</span><span>猜测</span></div>
+            <div class="formula"><span>你的账单</span><span class="operator">×</span><span>吸引人的百分比</span></div>
+          </article>
+
+          <article class="compare-card good reveal delay-3">
+            <div class="compare-label"><span>Eternalgy 方法</span><span class="truth-tag"><i></i> 模拟计算</span></div>
+            <div class="formula"><span>实际账单</span><span class="operator">→</span><span>装机后账单</span></div>
+          </article>
+        </div>
+      </div>
+
+      <p class="lead reveal delay-4">百分比估算是在假设上做减法。模拟计算的是实际应该剩下多少。</p>
+    </section>
+
+    <section class="slide dark" data-slide="3" aria-labelledby="slide-3-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">03 / 07</div>
+      </div>
+
+      <div class="math-stage">
+        <p class="eyebrow reveal delay-1">20 年的准确度差距</p>
+        <h2 id="slide-3-title" class="reveal delay-2">每月只多预测 <span class="accent">RM50</span>。</h2>
+
+        <div class="math-line reveal delay-3" aria-label="50 令吉 乘 12 个月 乘 20 年">
+          <span class="math-num">RM50</span><span class="math-times">×</span>
+          <span><span class="math-num">12</span> <span class="math-unit">个月</span></span>
+          <span class="math-times">×</span>
+          <span><span class="math-num">20</span> <span class="math-unit">年</span></span>
+        </div>
+
+        <div class="counter-wrap reveal delay-4">
+          <div class="counter-label">从预期回报中消失的金额</div>
+          <div class="counter" data-count="12000">RM0</div>
+        </div>
+      </div>
+
+      <p class="fineprint reveal delay-4">RM12,000 只是简单的、未计复利的差距——尚未计入电费涨价、贷款利息或机会成本。</p>
+    </section>
+
+    <section class="slide light" data-slide="4" aria-labelledby="slide-4-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">04 / 07</div>
+      </div>
+
+      <div>
+        <p class="eyebrow reveal delay-1">Eternalgy 如何计算</p>
+        <h2 id="slide-4-title" class="reveal delay-2">我们追踪能源流向——重新构建账单。</h2>
+
+        <div class="flow" aria-label="太阳能模拟流程">
+          <article class="flow-step reveal delay-1">
+            <div class="flow-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M7 9h10M7 13h7"/></svg>
+            </div>
+            <div><h3>实际 TNB 账单</h3><p>比对电费结构与估算用电量(kWh)。</p></div>
+            <span class="flow-arrow">↓</span>
+          </article>
+
+          <article class="flow-step reveal delay-2">
+            <div class="flow-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="7" r="3"/><path d="M12 1v2M12 11v2M6 7H4M20 7h-2M7.8 2.8 6.4 1.4M17.6 1.4l-1.4 1.4"/><path d="m4 21 4-7h8l4 7zM7 18h10M10 14l-1 7M14 14l1 7"/></svg>
+            </div>
+            <div><h3>太阳能发电量</h3><p>面板数量、瓦数与日照高峰时数。</p></div>
+            <span class="flow-arrow">↓</span>
+          </article>
+
+          <article class="flow-step reveal delay-3">
+            <div class="flow-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h5l2-5 4 10 2-5h5"/><path d="M5 20V4M19 20V4"/></svg>
+            </div>
+            <div><h3>实际能源流向</h3><p>自用电量、电池损耗、售电与电网购电。</p></div>
+            <span class="flow-arrow">↓</span>
+          </article>
+
+          <article class="flow-step reveal delay-4">
+            <div class="flow-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="m7 13 3 3 7-8"/></svg>
+            </div>
+            <div><h3>装机后 TNB 账单</h3><p>剩余用电量再次按电费结构计价。</p></div>
+            <span class="flow-arrow">✓</span>
+          </article>
+        </div>
+      </div>
+
+      <p class="lead reveal delay-4">我们问的不是「能算多少太阳能」,而是「客户实际应该付多少」。</p>
+    </section>
+
+    <section class="slide dark" data-slide="5" aria-labelledby="slide-5-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">05 / 07</div>
+      </div>
+
+      <div>
+        <p class="eyebrow reveal delay-1">真正重要的对比</p>
+        <h2 id="slide-5-title" class="reveal delay-2">装机前。装机后。同一份账单现实。</h2>
+
+        <div class="bill-compare reveal delay-3">
+          <article class="bill bill-before">
+            <div class="bill-label">装机前</div>
+            <div class="bill-amount">实际账单</div>
+            <div class="bill-lines" aria-hidden="true">
+              <div class="bill-line"><span style="width:92%"></span></div>
+              <div class="bill-line"><span style="width:78%"></span></div>
+              <div class="bill-line"><span style="width:66%"></span></div>
+              <div class="bill-line"><span style="width:84%"></span></div>
+              <div class="bill-line"><span style="width:57%"></span></div>
+            </div>
+          </article>
+
+          <div class="bill-arrow" aria-hidden="true">→</div>
+
+          <article class="bill">
+            <div class="bill-label">装机后</div>
+            <div class="bill-amount">模拟账单</div>
+            <div class="bill-lines" aria-hidden="true">
+              <div class="bill-line"><span style="width:36%"></span></div>
+              <div class="bill-line"><span style="width:49%"></span></div>
+              <div class="bill-line"><span style="width:27%"></span></div>
+              <div class="bill-line"><span style="width:43%"></span></div>
+              <div class="bill-line"><span style="width:20%"></span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="under-note reveal delay-4">
+        <span aria-hidden="true">●</span>
+        <div><b>透明,不是魔法。</b>结果会拆分出账单降幅、EEI 省电、售电收入、电池贡献与剩余电网用电量。</div>
+      </div>
+    </section>
+
+    <section class="slide light" data-slide="6" aria-labelledby="slide-6-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">06 / 07</div>
+      </div>
+
+      <div>
+        <p class="eyebrow reveal delay-1">当预测被夸大时</p>
+        <h2 id="slide-6-title" class="reveal delay-2">风险远不止一张令人失望的账单。</h2>
+
+        <div class="risk-list">
+          <article class="risk reveal delay-1">
+            <div class="risk-index">01</div>
+            <div><h3>回本期更长</h3><p>系统需要更多年份才能收回成本。</p></div>
+          </article>
+          <article class="risk reveal delay-2">
+            <div class="risk-index">02</div>
+            <div><h3>现金流吃紧</h3><p>省下的电费可能不再足以覆盖贷款还款。</p></div>
+          </article>
+          <article class="risk reveal delay-3">
+            <div class="risk-index">03</div>
+            <div><h3>整体回报更低</h3><p>每月一点小差距,在二十年间不断累积。</p></div>
+          </article>
+          <article class="risk reveal delay-4">
+            <div class="risk-index">04</div>
+            <div><h3>信任流失</h3><p>销售承诺已经结束,TNB 账单却还在继续寄来。</p></div>
+          </article>
+        </div>
+      </div>
+
+      <p class="lead reveal delay-4">评判一份太阳能方案,应该看省电是如何计算出来的——而不是这个数字看起来有多亮眼。</p>
+    </section>
+
+    <section class="slide green" data-slide="7" aria-labelledby="slide-7-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">07 / 07</div>
+      </div>
+
+      <div class="quote">
+        <div class="quote-mark" aria-hidden="true">“</div>
+        <p class="eyebrow reveal delay-1">每个买家都该问的问题</p>
+        <h2 id="slide-7-title" class="reveal delay-2">省电从来不在于卖家预测得有<span class="accent">多高</span>。</h2>
+        <p class="lead reveal delay-3"><strong>而在于这个预测有多准确。</strong></p>
+
+        <div class="question-grid reveal delay-3">
+          <div class="question"><span>1</span> 是否使用了我实际的 TNB 账单?</div>
+          <div class="question"><span>2</span> 是否模拟了我装机后的账单?</div>
+          <div class="question"><span>3</span> 卖家能否解释每一个假设条件?</div>
+        </div>
+
+        <div class="cta-box reveal delay-4">
+          <small>投资之前</small>
+          <strong>带上你的 TNB 账单,我们会向你展示省电是如何计算出来的。</strong>
+        </div>
+
+        <a class="continue-btn reveal delay-4" href="https://e.atap.solar/" target="_blank" rel="noopener">
+          <span>继续前往 Eternalgy 太阳能模拟系统</span>
+          <span class="continue-btn-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <p class="fineprint reveal delay-4" style="color:rgba(7,26,18,.55)">模拟计算是一种预测,并非保证账单。实际结果会因用电习惯、天气、场地条件、电费结构与系统表现而有所不同。</p>
+    </section>
+  </main>
+
+  <nav class="nav" aria-label="简报导航">
+    <button type="button" id="prev" aria-label="上一页">↑</button>
+    <div class="progress-track" aria-label="简报进度"><div class="progress-bar" id="progress"></div></div>
+    <button type="button" id="next" aria-label="下一页">↓</button>
+  </nav>
+
+  <script>
+    (() => {
+      const deck = document.getElementById('deck');
+      const slides = [...document.querySelectorAll('.slide')];
+      const progress = document.getElementById('progress');
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let activeIndex = 0;
+      let counterPlayed = false;
+
+      function formatRinggit(value) {
+        return 'RM' + Math.round(value).toLocaleString('en-MY');
+      }
+
+      function animateCounter(element) {
+        if (counterPlayed || !element) return;
+        counterPlayed = true;
+        const target = Number(element.dataset.count || 0);
+        if (reducedMotion) {
+          element.textContent = formatRinggit(target);
+          return;
+        }
+        const start = performance.now();
+        const duration = 1200;
+        const tick = (now) => {
+          const t = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - t, 4);
+          element.textContent = formatRinggit(target * eased);
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+
+      function setActive(index) {
+        activeIndex = Math.max(0, Math.min(slides.length - 1, index));
+        slides.forEach((slide, i) => slide.classList.toggle('is-active', i === activeIndex));
+        progress.style.width = `${((activeIndex + 1) / slides.length) * 100}%`;
+        prev.disabled = activeIndex === 0;
+        next.disabled = activeIndex === slides.length - 1;
+        if (activeIndex === 2) animateCounter(slides[2].querySelector('[data-count]'));
+      }
+
+      function goTo(index) {
+        slides[Math.max(0, Math.min(slides.length - 1, index))].scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' });
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter(entry => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActive(slides.indexOf(visible.target));
+      }, { root: deck, threshold: [0.55, 0.72] });
+
+      slides.forEach(slide => observer.observe(slide));
+      prev.addEventListener('click', () => goTo(activeIndex - 1));
+      next.addEventListener('click', () => goTo(activeIndex + 1));
+
+      window.addEventListener('keydown', (event) => {
+        if (['ArrowDown', 'PageDown', ' '].includes(event.key)) {
+          event.preventDefault();
+          goTo(activeIndex + 1);
+        }
+        if (['ArrowUp', 'PageUp'].includes(event.key)) {
+          event.preventDefault();
+          goTo(activeIndex - 1);
+        }
+        if (event.key === 'Home') goTo(0);
+        if (event.key === 'End') goTo(slides.length - 1);
+      });
+
+      setActive(0);
+    })();
+  </script>
+</body>
+</html>

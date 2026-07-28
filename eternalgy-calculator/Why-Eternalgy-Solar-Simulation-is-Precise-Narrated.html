@@ -1,0 +1,1344 @@
+<!doctype html>
+<html lang="en" id="html-root">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071a12">
+  <meta name="description" content="Why accurate solar saving simulation matters more than the highest predicted saving.">
+  <title>Why Saving Accuracy Matters | Eternalgy</title>
+  <style>
+    :root {
+      --ink: #071a12;
+      --ink-soft: #153426;
+      --paper: #f6f4ee;
+      --paper-2: #eeece4;
+      --white: #ffffff;
+      --green: #22c978;
+      --green-deep: #087044;
+      --green-pale: #dff8ea;
+      --lime: #c7f36b;
+      --amber: #ffbd4a;
+      --red: #ff675f;
+      --muted: #66756d;
+      --line: rgba(7, 26, 18, 0.13);
+      --stage: 440px;
+      --ease: cubic-bezier(.2,.72,.2,1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: #03100b;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(34, 201, 120, 0.2), transparent 34rem),
+        #03100b;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    button { font: inherit; }
+
+    .deck {
+      width: min(100%, var(--stage));
+      margin: 0 auto;
+      height: 100svh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-snap-type: y mandatory;
+      overscroll-behavior-y: contain;
+      scrollbar-width: none;
+      background: var(--paper);
+      box-shadow: 0 0 80px rgba(0, 0, 0, 0.48);
+      position: relative;
+    }
+
+    .deck::-webkit-scrollbar { display: none; }
+
+    .deck.rubber-band {
+      animation: deck-rubber-band 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    }
+
+    @keyframes deck-rubber-band {
+      0% { transform: translateY(0); }
+      30% { transform: translateY(-14px); }
+      55% { transform: translateY(4px); }
+      75% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
+    .slide {
+      min-height: 100svh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      padding: max(28px, env(safe-area-inset-top)) 24px max(88px, calc(env(safe-area-inset-bottom) + 72px));
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      isolation: isolate;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .slide.light::before {
+      background:
+        linear-gradient(rgba(7, 26, 18, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(7, 26, 18, 0.035) 1px, transparent 1px),
+        var(--paper);
+      background-size: 28px 28px;
+    }
+
+    .slide.dark {
+      color: var(--white);
+      background: var(--ink);
+    }
+
+    .slide.dark::before {
+      background:
+        radial-gradient(circle at 80% 18%, rgba(34, 201, 120, 0.22), transparent 17rem),
+        radial-gradient(circle at 0% 90%, rgba(199, 243, 107, 0.09), transparent 20rem),
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        var(--ink);
+      background-size: auto, auto, 28px 28px, 28px 28px, auto;
+    }
+
+    .slide.green {
+      color: var(--ink);
+      background: var(--green);
+    }
+
+    .slide.green::before {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(255,255,255,.32), transparent 18rem),
+        linear-gradient(rgba(7, 26, 18, 0.065) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(7, 26, 18, 0.065) 1px, transparent 1px);
+      background-size: auto, 28px 28px, 28px 28px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 23px;
+      height: 23px;
+      border-radius: 50%;
+      background: var(--green);
+      position: relative;
+      box-shadow: inset 0 0 0 5px rgba(7, 26, 18, .16);
+    }
+
+    .dark .brand-mark { box-shadow: inset 0 0 0 5px rgba(255,255,255,.22); }
+    .green .brand-mark { background: var(--ink); box-shadow: inset 0 0 0 5px rgba(255,255,255,.22); }
+
+    .slide-no { opacity: .55; }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--green-deep);
+      font-size: 11px;
+      line-height: 1.3;
+      font-weight: 850;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .dark .eyebrow { color: var(--lime); }
+    .green .eyebrow { color: rgba(7, 26, 18, .66); }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1, h2 {
+      margin-bottom: 18px;
+      letter-spacing: -.03em;
+      line-height: 1.08;
+      text-wrap: balance;
+    }
+
+    html.lang-zh h1, html.lang-zh h2 { letter-spacing: -.01em; line-height: 1.28; }
+
+    h1 {
+      font-size: clamp(42px, 12vw, 58px);
+      max-width: 9.5ch;
+    }
+
+    h2 {
+      font-size: clamp(34px, 9.8vw, 46px);
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 17px;
+      line-height: 1.2;
+      letter-spacing: -.02em;
+    }
+
+    .lead {
+      max-width: 34ch;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .dark .lead { color: rgba(255,255,255,.68); }
+    .green .lead { color: rgba(7,26,18,.76); }
+
+    .accent { color: var(--green); }
+    .dark .accent { color: var(--lime); }
+    .green .accent { color: var(--ink); text-decoration: underline; text-decoration-thickness: .09em; text-underline-offset: .1em; }
+
+    .hero-copy { margin: auto 0; padding: 24px 0; }
+
+    .hero-statement {
+      padding: 16px 18px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 18px;
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(8px);
+      font-size: 14px;
+      line-height: 1.5;
+      color: rgba(255,255,255,.76);
+    }
+
+    .hero-statement strong { color: var(--white); }
+
+    .sun-orbit {
+      width: 184px;
+      height: 184px;
+      position: absolute;
+      top: 17%;
+      right: -76px;
+      border: 1px solid rgba(199, 243, 107, .3);
+      border-radius: 50%;
+      animation: orbit 12s linear infinite;
+      z-index: -1;
+    }
+
+    .sun-orbit::before {
+      content: "";
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      top: 10px;
+      left: 26px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 36px rgba(199, 243, 107, .65);
+    }
+
+    .compare {
+      display: grid;
+      gap: 12px;
+      margin: 28px 0;
+    }
+
+    .compare-card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 19px;
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 12px 32px rgba(7,26,18,.06);
+    }
+
+    .compare-card.bad { border-left: 5px solid var(--red); }
+    .compare-card.good { border-left: 5px solid var(--green); background: var(--green-pale); }
+
+    .compare-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .13em;
+    }
+
+    .formula {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 820;
+      font-size: 18px;
+      letter-spacing: -.01em;
+    }
+
+    .formula .operator { color: var(--muted); font-weight: 500; }
+
+    .truth-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 99px;
+      background: var(--ink);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .truth-tag i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(34,201,120,.16);
+    }
+
+    .math-stage {
+      margin: auto 0;
+      text-align: center;
+    }
+
+    .math-line {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px 9px;
+      margin: 20px -8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .math-num {
+      font-size: 44px;
+      font-weight: 900;
+      letter-spacing: -.04em;
+    }
+
+    .math-unit {
+      color: rgba(255,255,255,.56);
+      font-size: 12px;
+      font-weight: 760;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .math-times { color: var(--green); font-size: 24px; font-weight: 500; }
+
+    .counter-wrap {
+      margin: 20px 0 12px;
+      padding: 24px 12px;
+      border-radius: 28px;
+      background: var(--green);
+      color: var(--ink);
+      box-shadow: 0 24px 60px rgba(34,201,120,.16);
+    }
+
+    .counter-label {
+      margin-bottom: 7px;
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .counter {
+      font-size: clamp(52px, 16vw, 70px);
+      font-weight: 920;
+      line-height: .95;
+      letter-spacing: -.04em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .fineprint {
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.55;
+      color: rgba(255,255,255,.5);
+    }
+
+    .flow {
+      display: grid;
+      gap: 9px;
+      margin: 24px 0 16px;
+      position: relative;
+    }
+
+    .flow::before {
+      content: "";
+      position: absolute;
+      top: 34px;
+      bottom: 34px;
+      left: 22px;
+      width: 2px;
+      background: linear-gradient(var(--green), rgba(34,201,120,.15));
+      z-index: -1;
+    }
+
+    .flow-step {
+      display: grid;
+      grid-template-columns: 45px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 64px;
+      padding: 10px 13px 10px 8px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.82);
+    }
+
+    .flow-icon {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--green-deep);
+      background: var(--green-pale);
+    }
+
+    .flow-icon svg { width: 20px; height: 20px; }
+
+    .flow-step p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .flow-arrow { color: var(--green-deep); font-size: 17px; }
+
+    .bill-compare {
+      display: grid;
+      grid-template-columns: 1fr 34px 1fr;
+      align-items: center;
+      gap: 6px;
+      margin: 28px 0 22px;
+    }
+
+    .bill {
+      min-height: 218px;
+      padding: 17px;
+      border-radius: 22px;
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: 0 16px 40px rgba(0,0,0,.16);
+      position: relative;
+    }
+
+    .bill::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: -6px;
+      height: 12px;
+      background: linear-gradient(135deg, var(--white) 6px, transparent 0) 0 0/12px 12px repeat-x;
+    }
+
+    .bill-label {
+      font-size: 9px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      font-weight: 850;
+      color: var(--muted);
+    }
+
+    .bill-amount {
+      margin: 18px 0;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -.02em;
+    }
+
+    .bill-lines { display: grid; gap: 7px; }
+    .bill-line { height: 5px; border-radius: 99px; background: var(--paper-2); overflow: hidden; }
+    .bill-line span { display: block; height: 100%; border-radius: inherit; background: var(--green); }
+    .bill-before .bill-line span { background: #b4bdb8; }
+    .bill-arrow { color: var(--lime); font-size: 25px; text-align: center; animation: nudge 1.8s ease-in-out infinite; }
+
+    .under-note {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 14px 15px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 16px;
+      color: rgba(255,255,255,.68);
+      background: rgba(255,255,255,.05);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .under-note b { color: var(--white); }
+
+    .risk-list {
+      display: grid;
+      gap: 10px;
+      margin: 24px 0;
+    }
+
+    .risk {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(7,26,18,.14);
+      background: rgba(255,255,255,.62);
+    }
+
+    .risk-index {
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: var(--ink);
+      color: var(--lime);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .risk p { margin: 2px 0 0; color: rgba(7,26,18,.62); font-size: 12px; line-height: 1.45; }
+
+    .quote {
+      margin: auto 0;
+      position: relative;
+    }
+
+    .quote-mark {
+      position: absolute;
+      top: -65px;
+      left: -8px;
+      font-family: Georgia, serif;
+      font-size: 148px;
+      line-height: 1;
+      color: rgba(7,26,18,.09);
+    }
+
+    .quote h2 { position: relative; font-size: clamp(36px, 9.5vw, 46px); }
+
+    .question-grid {
+      margin-top: 30px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .question {
+      display: flex;
+      gap: 11px;
+      align-items: center;
+      padding: 13px 15px;
+      border-radius: 15px;
+      background: rgba(7,26,18,.09);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .question span {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      background: var(--ink);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .cta-box {
+      margin-top: 26px;
+      padding: 18px;
+      border-radius: 20px;
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .cta-box small {
+      display: block;
+      margin-bottom: 6px;
+      color: rgba(255,255,255,.54);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .cta-box strong { font-size: 16px; line-height: 1.45; }
+
+    .continue-btn {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 20px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--white);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 850;
+      letter-spacing: -.01em;
+      box-shadow: 0 16px 34px rgba(7,26,18,.28);
+      transition: transform .2s ease;
+    }
+
+    .continue-btn:active { transform: scale(.97); }
+    .continue-btn-arrow { transition: transform .2s ease; }
+    .continue-btn:hover .continue-btn-arrow { transform: translateX(3px); }
+
+    .nav {
+      position: fixed;
+      z-index: 20;
+      left: 50%;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      width: min(calc(100% - 24px), 416px);
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      gap: 10px;
+      align-items: center;
+      padding: 8px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 18px;
+      background: rgba(7,26,18,.9);
+      box-shadow: 0 16px 40px rgba(0,0,0,.25);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav button {
+      width: 44px;
+      height: 38px;
+      border: 0;
+      border-radius: 12px;
+      color: var(--white);
+      background: rgba(255,255,255,.08);
+      cursor: pointer;
+      font-size: 18px;
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .nav button:active { transform: scale(.94); }
+    .nav button:disabled { opacity: .28; cursor: default; }
+
+    .progress-track {
+      height: 4px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: rgba(255,255,255,.13);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 14.285%;
+      border-radius: inherit;
+      background: var(--green);
+      transition: width .45s var(--ease);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .7s var(--ease), transform .7s var(--ease);
+    }
+
+    .is-active .reveal { opacity: 1; transform: translateY(0); }
+    .is-active .delay-1 { transition-delay: .08s; }
+    .is-active .delay-2 { transition-delay: .16s; }
+    .is-active .delay-3 { transition-delay: .24s; }
+    .is-active .delay-4 { transition-delay: .32s; }
+
+    @keyframes orbit { to { transform: rotate(360deg); } }
+    @keyframes nudge { 0%,100% { transform: translateX(-2px); } 50% { transform: translateX(3px); } }
+
+    /* ---- Language toggle ---- */
+    .lang-toggle {
+      position: fixed;
+      z-index: 30;
+      top: max(14px, env(safe-area-inset-top));
+      right: 14px;
+      border: 1.5px solid rgba(255,255,255,.18);
+      background: rgba(7,26,18,.78);
+      backdrop-filter: blur(10px);
+      color: var(--lime);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      cursor: pointer;
+      display: none;
+    }
+
+    body.started .lang-toggle { display: inline-flex; align-items: center; gap: 6px; }
+
+    /* ---- "ready to scroll" cue ---- */
+    .next-cue {
+      position: fixed;
+      z-index: 20;
+      left: 50%;
+      bottom: max(68px, calc(env(safe-area-inset-bottom) + 56px));
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      pointer-events: none;
+      opacity: 0;
+      animation: next-cue-in .3s ease-out forwards;
+    }
+
+    .next-cue-arrow {
+      width: 9px;
+      height: 9px;
+      border-right: 1.5px solid var(--lime);
+      border-bottom: 1.5px solid var(--lime);
+      transform: rotate(45deg);
+      animation: next-cue-bob 1.4s ease-in-out infinite;
+    }
+
+    .slide.light .next-cue-arrow, .slide.green .next-cue-arrow { border-color: var(--green-deep); }
+
+    .next-cue-label {
+      color: rgba(255,255,255,.72);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      background: rgba(7,26,18,.6);
+      padding: 4px 10px;
+      border-radius: 99px;
+      backdrop-filter: blur(6px);
+    }
+
+    @keyframes next-cue-bob {
+      0%, 100% { transform: rotate(45deg) translate(0, 0); }
+      50% { transform: rotate(45deg) translate(4px, 4px); }
+    }
+
+    @keyframes next-cue-in {
+      from { opacity: 0; transform: translate(-50%, 6px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    /* ---- narration status dot ---- */
+    .narration-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      opacity: .6;
+    }
+
+    .narration-dot i {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+
+    .is-active .narration-dot.playing i {
+      background: var(--lime);
+      animation: pulse-dot 1.1s ease-in-out infinite;
+    }
+
+    .is-active .narration-dot.done i { background: var(--green); animation: none; }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .4; transform: scale(.7); }
+    }
+
+    /* ---- start overlay ---- */
+    .start-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 32px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(34, 201, 120, 0.22), transparent 30rem),
+        var(--ink);
+      color: var(--white);
+    }
+
+    .start-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--lime);
+    }
+
+    .start-title { font-size: clamp(26px, 8vw, 32px); line-height: 1.2; max-width: 16ch; letter-spacing: -.02em; margin: 0; }
+    .start-sub { max-width: 30ch; color: rgba(255,255,255,.62); font-size: 14px; line-height: 1.55; margin: 0; }
+
+    .start-lang { display: flex; gap: 8px; }
+
+    .lang-chip {
+      padding: 9px 16px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.7);
+      font-size: 13px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .lang-chip.on {
+      border-color: var(--lime);
+      background: rgba(199,243,107,.12);
+      color: var(--lime);
+    }
+
+    .start-btn {
+      margin-top: 6px;
+      padding: 15px 30px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--green);
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 850;
+      cursor: pointer;
+      box-shadow: 0 18px 40px rgba(34,201,120,.28);
+    }
+
+    .start-btn:active { transform: scale(.97); }
+
+    @media (max-height: 690px) {
+      .slide { padding-top: 22px; }
+      h1 { font-size: 40px; }
+      h2 { font-size: 33px; }
+      .compare { margin: 16px 0; }
+      .compare-card { padding: 15px; }
+      .flow { gap: 6px; margin: 15px 0 10px; }
+      .flow-step { min-height: 54px; }
+      .bill { min-height: 185px; }
+      .risk-list { gap: 7px; margin: 16px 0; }
+      .risk { padding: 10px 12px; }
+    }
+
+    @media (min-width: 700px) {
+      body { padding: 0 18px; }
+      .deck { border-left: 1px solid rgba(255,255,255,.1); border-right: 1px solid rgba(255,255,255,.1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="start-overlay" id="startOverlay">
+    <div class="start-brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+    <h2 class="start-title" data-en="Why Saving Accuracy Matters" data-zh="为什么省电准确度至关重要">Why Saving Accuracy Matters</h2>
+    <p class="start-sub" data-en="A two-minute narrated walkthrough. Sound on." data-zh="两分钟语音导览 — 请开启声音。">A two-minute narrated walkthrough. Sound on.</p>
+    <div class="start-lang">
+      <button type="button" class="lang-chip on" id="chipEn">English</button>
+      <button type="button" class="lang-chip" id="chipZh">中文</button>
+    </div>
+    <button type="button" class="start-btn" id="startBtn" data-en="▶ Start presentation" data-zh="▶ 开始演示">▶ Start presentation</button>
+  </div>
+
+  <button type="button" class="lang-toggle" id="langToggle" aria-label="Switch presentation language">EN · 中文</button>
+
+  <div class="next-cue" id="nextCue" aria-hidden="true" style="display:none">
+    <span class="next-cue-arrow"></span>
+    <span class="next-cue-label" id="nextCueLabel" data-en="Scroll down" data-zh="向下滑动">Scroll down</span>
+  </div>
+
+  <main class="deck" id="deck" aria-label="Eternalgy solar saving accuracy presentation">
+    <section class="slide dark is-active" data-slide="1" aria-labelledby="slide-1-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">01 / 07</div>
+      </div>
+
+      <div class="sun-orbit" aria-hidden="true"></div>
+
+      <div class="hero-copy">
+        <p class="eyebrow reveal delay-1" data-en="Before you buy solar" data-zh="购买太阳能之前">Before you buy solar</p>
+        <h1 id="slide-1-title" class="reveal delay-2" data-en-html='The biggest saving number is <span class="accent">not</span> the best number.' data-zh-html='最大的省电数字<span class="accent">不是</span>最好的数字。'>The biggest saving number is <span class="accent">not</span> the best number.</h1>
+        <p class="lead reveal delay-3" data-en="The best number is the one closest to the saving you will actually see on your TNB bill." data-zh="最好的数字,是最接近你实际会在 TNB 账单上看到的省电金额。">The best number is the one closest to the saving you will actually see on your TNB bill.</p>
+      </div>
+
+      <div class="hero-statement reveal delay-4">
+        <strong data-en="Solar is a 20-year decision." data-zh="太阳能是一项 20 年的决定。">Solar is a 20-year decision.</strong><br>
+        <span data-en="Accuracy matters long after the sales presentation ends." data-zh="准确度的重要性,在销售简报结束后依然持续。">Accuracy matters long after the sales presentation ends.</span>
+      </div>
+    </section>
+
+    <section class="slide light" data-slide="2" aria-labelledby="slide-2-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">02 / 07</div>
+      </div>
+
+      <div>
+        <p class="eyebrow reveal delay-1" data-en="Prediction vs calculation" data-zh="预测 vs 计算">Prediction vs calculation</p>
+        <h2 id="slide-2-title" class="reveal delay-2" data-en="A high estimate can be easy to sell—and hard to live with." data-zh="过高的估算容易推销,却难以承受。">A high estimate can be easy to sell—and hard to live with.</h2>
+
+        <div class="compare">
+          <article class="compare-card bad reveal delay-2">
+            <div class="compare-label"><span data-en="Shortcut estimate" data-zh="捷径估算">Shortcut estimate</span><span data-en="Guess" data-zh="猜测">Guess</span></div>
+            <div class="formula"><span data-en="Your bill" data-zh="你的账单">Your bill</span><span class="operator">×</span><span data-en="Attractive %" data-zh="吸引人的百分比">Attractive %</span></div>
+          </article>
+
+          <article class="compare-card good reveal delay-3">
+            <div class="compare-label"><span data-en="Eternalgy method" data-zh="Eternalgy 方法">Eternalgy method</span><span class="truth-tag"><i></i> <span data-en="Simulated" data-zh="模拟计算">Simulated</span></span></div>
+            <div class="formula"><span data-en="Actual bill" data-zh="实际账单">Actual bill</span><span class="operator">→</span><span data-en="Post-solar bill" data-zh="装机后账单">Post-solar bill</span></div>
+          </article>
+        </div>
+      </div>
+
+      <p class="lead reveal delay-4" data-en="A percentage estimate subtracts an assumption. A simulation calculates what should remain." data-zh="百分比估算是在假设上做减法。模拟计算的是实际应该剩下多少。">A percentage estimate subtracts an assumption. A simulation calculates what should remain.</p>
+    </section>
+
+    <section class="slide dark" data-slide="3" aria-labelledby="slide-3-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">03 / 07</div>
+      </div>
+
+      <div class="math-stage">
+        <p class="eyebrow reveal delay-1" data-en="The 20-year accuracy gap" data-zh="20 年的准确度差距">The 20-year accuracy gap</p>
+        <h2 id="slide-3-title" class="reveal delay-2" data-en-html='Over-predict by only <span class="accent">RM50</span> a month.' data-zh-html='每月只多预测 <span class="accent">RM50</span>。'>Over-predict by only <span class="accent">RM50</span> a month.</h2>
+
+        <div class="math-line reveal delay-3" aria-label="50 ringgit times 12 months times 20 years">
+          <span class="math-num">RM50</span><span class="math-times">×</span>
+          <span><span class="math-num">12</span> <span class="math-unit" data-en="months" data-zh="个月">months</span></span>
+          <span class="math-times">×</span>
+          <span><span class="math-num">20</span> <span class="math-unit" data-en="years" data-zh="年">years</span></span>
+        </div>
+
+        <div class="counter-wrap reveal delay-4">
+          <div class="counter-label" data-en="Missing from the expected return" data-zh="从预期回报中消失的金额">Missing from the expected return</div>
+          <div class="counter" data-count="12000">RM0</div>
+        </div>
+      </div>
+
+      <p class="fineprint reveal delay-4" data-en="RM12,000 is the simple, non-compounded gap—before tariff escalation, financing effects or opportunity cost." data-zh="RM12,000 只是简单的、未计复利的差距——尚未计入电费涨价、贷款利息或机会成本。">RM12,000 is the simple, non-compounded gap—before tariff escalation, financing effects or opportunity cost.</p>
+    </section>
+
+    <section class="slide light" data-slide="4" aria-labelledby="slide-4-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">04 / 07</div>
+      </div>
+
+      <div>
+        <p class="eyebrow reveal delay-1" data-en="How Eternalgy calculates" data-zh="Eternalgy 如何计算">How Eternalgy calculates</p>
+        <h2 id="slide-4-title" class="reveal delay-2" data-en="We follow the energy—and rebuild the bill." data-zh="我们追踪能源流向——重新构建账单。">We follow the energy—and rebuild the bill.</h2>
+
+        <div class="flow" aria-label="Solar simulation flow">
+          <article class="flow-step reveal delay-1">
+            <div class="flow-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M7 9h10M7 13h7"/></svg>
+            </div>
+            <div><h3 data-en="Actual TNB bill" data-zh="实际 TNB 账单">Actual TNB bill</h3><p data-en="Matched to tariff data and estimated kWh usage." data-zh="比对电费结构与估算用电量(kWh)。">Matched to tariff data and estimated kWh usage.</p></div>
+            <span class="flow-arrow">↓</span>
+          </article>
+
+          <article class="flow-step reveal delay-2">
+            <div class="flow-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="7" r="3"/><path d="M12 1v2M12 11v2M6 7H4M20 7h-2M7.8 2.8 6.4 1.4M17.6 1.4l-1.4 1.4"/><path d="m4 21 4-7h8l4 7zM7 18h10M10 14l-1 7M14 14l1 7"/></svg>
+            </div>
+            <div><h3 data-en="Solar generation" data-zh="太阳能发电量">Solar generation</h3><p data-en="Panel quantity, wattage and sun peak hours." data-zh="面板数量、瓦数与日照高峰时数。">Panel quantity, wattage and sun peak hours.</p></div>
+            <span class="flow-arrow">↓</span>
+          </article>
+
+          <article class="flow-step reveal delay-3">
+            <div class="flow-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h5l2-5 4 10 2-5h5"/><path d="M5 20V4M19 20V4"/></svg>
+            </div>
+            <div><h3 data-en="Real energy flow" data-zh="实际能源流向">Real energy flow</h3><p data-en="Self-use, battery losses, export and grid import." data-zh="自用电量、电池损耗、售电与电网购电。">Self-use, battery losses, export and grid import.</p></div>
+            <span class="flow-arrow">↓</span>
+          </article>
+
+          <article class="flow-step reveal delay-4">
+            <div class="flow-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="m7 13 3 3 7-8"/></svg>
+            </div>
+            <div><h3 data-en="Post-solar TNB bill" data-zh="装机后 TNB 账单">Post-solar TNB bill</h3><p data-en="Remaining usage is priced through tariff data again." data-zh="剩余用电量再次按电费结构计价。">Remaining usage is priced through tariff data again.</p></div>
+            <span class="flow-arrow">✓</span>
+          </article>
+        </div>
+      </div>
+
+      <p class="lead reveal delay-4" data-en="Not “How much solar can we claim?” but “What should the customer actually pay?”" data-zh="我们问的不是「能算多少太阳能」,而是「客户实际应该付多少」。">Not "How much solar can we claim?" but "What should the customer actually pay?"</p>
+    </section>
+
+    <section class="slide dark" data-slide="5" aria-labelledby="slide-5-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">05 / 07</div>
+      </div>
+
+      <div>
+        <p class="eyebrow reveal delay-1" data-en="The comparison that matters" data-zh="真正重要的对比">The comparison that matters</p>
+        <h2 id="slide-5-title" class="reveal delay-2" data-en="Before solar. After solar. Same billing reality." data-zh="装机前。装机后。同一份账单现实。">Before solar. After solar. Same billing reality.</h2>
+
+        <div class="bill-compare reveal delay-3">
+          <article class="bill bill-before">
+            <div class="bill-label" data-en="Before solar" data-zh="装机前">Before solar</div>
+            <div class="bill-amount" data-en="Actual bill" data-zh="实际账单">Actual bill</div>
+            <div class="bill-lines" aria-hidden="true">
+              <div class="bill-line"><span style="width:92%"></span></div>
+              <div class="bill-line"><span style="width:78%"></span></div>
+              <div class="bill-line"><span style="width:66%"></span></div>
+              <div class="bill-line"><span style="width:84%"></span></div>
+              <div class="bill-line"><span style="width:57%"></span></div>
+            </div>
+          </article>
+
+          <div class="bill-arrow" aria-hidden="true">→</div>
+
+          <article class="bill">
+            <div class="bill-label" data-en="After solar" data-zh="装机后">After solar</div>
+            <div class="bill-amount" data-en="Simulated bill" data-zh="模拟账单">Simulated bill</div>
+            <div class="bill-lines" aria-hidden="true">
+              <div class="bill-line"><span style="width:36%"></span></div>
+              <div class="bill-line"><span style="width:49%"></span></div>
+              <div class="bill-line"><span style="width:27%"></span></div>
+              <div class="bill-line"><span style="width:43%"></span></div>
+              <div class="bill-line"><span style="width:20%"></span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="under-note reveal delay-4">
+        <span aria-hidden="true">●</span>
+        <div><b data-en="Transparent, not magical." data-zh="透明,不是魔法。">Transparent, not magical.</b> <span data-en="The result separates bill reduction, EEI saving, export value, battery contribution and remaining grid usage." data-zh="结果会拆分出账单降幅、EEI 省电、售电收入、电池贡献与剩余电网用电量。">The result separates bill reduction, EEI saving, export value, battery contribution and remaining grid usage.</span></div>
+      </div>
+    </section>
+
+    <section class="slide light" data-slide="6" aria-labelledby="slide-6-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">06 / 07</div>
+      </div>
+
+      <div>
+        <p class="eyebrow reveal delay-1" data-en="When prediction is inflated" data-zh="当预测被夸大时">When prediction is inflated</p>
+        <h2 id="slide-6-title" class="reveal delay-2" data-en="The risk is bigger than one disappointing bill." data-zh="风险远不止一张令人失望的账单。">The risk is bigger than one disappointing bill.</h2>
+
+        <div class="risk-list">
+          <article class="risk reveal delay-1">
+            <div class="risk-index">01</div>
+            <div><h3 data-en="Longer payback" data-zh="回本期更长">Longer payback</h3><p data-en="The system takes more years to recover its cost." data-zh="系统需要更多年份才能收回成本。">The system takes more years to recover its cost.</p></div>
+          </article>
+          <article class="risk reveal delay-2">
+            <div class="risk-index">02</div>
+            <div><h3 data-en="Weaker cash flow" data-zh="现金流吃紧">Weaker cash flow</h3><p data-en="Loan payments may no longer feel covered by savings." data-zh="省下的电费可能不再足以覆盖贷款还款。">Loan payments may no longer feel covered by savings.</p></div>
+          </article>
+          <article class="risk reveal delay-3">
+            <div class="risk-index">03</div>
+            <div><h3 data-en="Lower lifetime return" data-zh="整体回报更低">Lower lifetime return</h3><p data-en="A small monthly gap repeats across two decades." data-zh="每月一点小差距,在二十年间不断累积。">A small monthly gap repeats across two decades.</p></div>
+          </article>
+          <article class="risk reveal delay-4">
+            <div class="risk-index">04</div>
+            <div><h3 data-en="Lost trust" data-zh="信任流失">Lost trust</h3><p data-en="The sales promise ends; the TNB bill keeps arriving." data-zh="销售承诺已经结束,TNB 账单却还在继续寄来。">The sales promise ends; the TNB bill keeps arriving.</p></div>
+          </article>
+        </div>
+      </div>
+
+      <p class="lead reveal delay-4" data-en="A solar proposal should be judged by how the saving was calculated—not by how impressive the number looks." data-zh="评判一份太阳能方案,应该看省电是如何计算出来的——而不是这个数字看起来有多亮眼。">A solar proposal should be judged by how the saving was calculated—not by how impressive the number looks.</p>
+    </section>
+
+    <section class="slide green" data-slide="7" aria-labelledby="slide-7-title">
+      <div class="topline reveal">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Eternalgy</div>
+        <div class="slide-no">07 / 07</div>
+      </div>
+
+      <div class="quote">
+        <div class="quote-mark" aria-hidden="true">“</div>
+        <p class="eyebrow reveal delay-1" data-en="The question every buyer should ask" data-zh="每个买家都该问的问题">The question every buyer should ask</p>
+        <h2 id="slide-7-title" class="reveal delay-2" data-en-html='Saving is never about how <span class="accent">high</span> the seller predicts.' data-zh-html='省电从来不在于卖家预测得有<span class="accent">多高</span>。'>Saving is never about how <span class="accent">high</span> the seller predicts.</h2>
+        <p class="lead reveal delay-3"><strong data-en="It is about how accurate the prediction is." data-zh="而在于这个预测有多准确。">It is about how accurate the prediction is.</strong></p>
+
+        <div class="question-grid reveal delay-3">
+          <div class="question"><span>1</span> <span data-en="Was my actual TNB bill used?" data-zh="是否使用了我实际的 TNB 账单?">Was my actual TNB bill used?</span></div>
+          <div class="question"><span>2</span> <span data-en="Was my post-solar bill simulated?" data-zh="是否模拟了我装机后的账单?">Was my post-solar bill simulated?</span></div>
+          <div class="question"><span>3</span> <span data-en="Can the seller explain every assumption?" data-zh="卖家能否解释每一个假设条件?">Can the seller explain every assumption?</span></div>
+        </div>
+
+        <div class="cta-box reveal delay-4">
+          <small data-en="Before you invest" data-zh="投资之前">Before you invest</small>
+          <strong data-en="Bring us your TNB bill. We will show you how the saving is calculated." data-zh="带上你的 TNB 账单,我们会向你展示省电是如何计算出来的。">Bring us your TNB bill. We will show you how the saving is calculated.</strong>
+        </div>
+
+        <a class="continue-btn reveal delay-4" href="https://e.atap.solar/" target="_blank" rel="noopener">
+          <span data-en="Continue with Eternalgy Solar Simulation" data-zh="继续前往 Eternalgy 太阳能模拟系统">Continue with Eternalgy Solar Simulation</span>
+          <span class="continue-btn-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <p class="fineprint reveal delay-4" style="color:rgba(7,26,18,.55)" data-en="Simulation is a forecast, not a guaranteed bill. Actual results vary with usage, weather, site conditions, tariffs and system performance." data-zh="模拟计算是一种预测,并非保证账单。实际结果会因用电习惯、天气、场地条件、电费结构与系统表现而有所不同。">Simulation is a forecast, not a guaranteed bill. Actual results vary with usage, weather, site conditions, tariffs and system performance.</p>
+    </section>
+  </main>
+
+  <nav class="nav" aria-label="Presentation navigation">
+    <button type="button" id="prev" aria-label="Previous slide">↑</button>
+    <div class="progress-track" aria-label="Presentation progress"><div class="progress-bar" id="progress"></div></div>
+    <button type="button" id="next" aria-label="Next slide">↓</button>
+  </nav>
+
+  <script>
+    (() => {
+      const deck = document.getElementById('deck');
+      const slides = [...document.querySelectorAll('.slide')];
+      const progress = document.getElementById('progress');
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      const nextCue = document.getElementById('nextCue');
+      const langToggle = document.getElementById('langToggle');
+      const startOverlay = document.getElementById('startOverlay');
+      const startBtn = document.getElementById('startBtn');
+      const chipEn = document.getElementById('chipEn');
+      const chipZh = document.getElementById('chipZh');
+      const htmlRoot = document.getElementById('html-root');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      let lang = 'en';
+      let started = false;
+      let activeIndex = 0;
+      let counterPlayed = false;
+      let narrationDone = true;
+      let currentAudio = null;
+      let bounceTimer = null;
+
+      // ---- language ----
+      function applyLang(next) {
+        lang = next;
+        htmlRoot.lang = lang === 'zh' ? 'zh-CN' : 'en';
+        htmlRoot.classList.toggle('lang-zh', lang === 'zh');
+        document.querySelectorAll('[data-en]').forEach(el => {
+          el.textContent = lang === 'zh' ? el.dataset.zh : el.dataset.en;
+        });
+        document.querySelectorAll('[data-en-html]').forEach(el => {
+          el.innerHTML = lang === 'zh' ? el.dataset.zhHtml : el.dataset.enHtml;
+        });
+        langToggle.textContent = lang === 'en' ? 'EN · 中文' : '中文 · EN';
+        chipEn.classList.toggle('on', lang === 'en');
+        chipZh.classList.toggle('on', lang === 'zh');
+        if (started) playNarration(activeIndex, true);
+      }
+
+      chipEn.addEventListener('click', () => applyLang('en'));
+      chipZh.addEventListener('click', () => applyLang('zh'));
+      langToggle.addEventListener('click', () => applyLang(lang === 'en' ? 'zh' : 'en'));
+
+      // ---- counter (slide 3) ----
+      function formatRinggit(value) {
+        return 'RM' + Math.round(value).toLocaleString('en-MY');
+      }
+
+      function animateCounter(element) {
+        if (counterPlayed || !element) return;
+        counterPlayed = true;
+        const target = Number(element.dataset.count || 0);
+        if (reducedMotion) {
+          element.textContent = formatRinggit(target);
+          return;
+        }
+        const start = performance.now();
+        const duration = 1200;
+        const tick = (now) => {
+          const t = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - t, 4);
+          element.textContent = formatRinggit(target * eased);
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+
+      // ---- narration ----
+      function updateCue() {
+        const showCue = started && narrationDone && activeIndex < slides.length - 1;
+        nextCue.style.display = showCue ? 'flex' : 'none';
+      }
+
+      function playNarration(index, restart) {
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.removeEventListener('ended', onNarrationEnded);
+          currentAudio = null;
+        }
+        const slideNo = index + 1; // data-slide is 1-based
+        narrationDone = false;
+        updateCue();
+        setNarrationDotState('playing');
+
+        const suffix = lang === 'zh' ? '_zh' : '';
+        const audio = new Audio(`audio/s${slideNo}${suffix}.mp3`);
+        currentAudio = audio;
+        audio.addEventListener('ended', onNarrationEnded);
+        audio.onerror = () => {
+          // No matching narration for this slide/lang — treat as instantly done.
+          narrationDone = true;
+          updateCue();
+          setNarrationDotState('done');
+        };
+        audio.play().catch(() => {
+          /* Autoplay blocked; user can still scroll after the cue never blocks harder than one bounce. */
+        });
+      }
+
+      function onNarrationEnded() {
+        narrationDone = true;
+        updateCue();
+        setNarrationDotState('done');
+      }
+
+      function setNarrationDotState() { /* reserved: per-slide status dot hook, no-op for now */ }
+
+      // ---- slide activation ----
+      function setActive(index) {
+        const prevIndex = activeIndex;
+        activeIndex = Math.max(0, Math.min(slides.length - 1, index));
+        slides.forEach((slide, i) => slide.classList.toggle('is-active', i === activeIndex));
+        progress.style.width = `${((activeIndex + 1) / slides.length) * 100}%`;
+        prev.disabled = activeIndex === 0;
+        next.disabled = activeIndex === slides.length - 1;
+        if (activeIndex === 2) animateCounter(slides[2].querySelector('[data-count]'));
+        if (started && activeIndex !== prevIndex) playNarration(activeIndex, false);
+        updateCue();
+      }
+
+      function goTo(index) {
+        const target = Math.max(0, Math.min(slides.length - 1, index));
+        if (target > activeIndex && started && !narrationDone) {
+          bounce();
+          return;
+        }
+        slides[target].scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' });
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter(entry => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActive(slides.indexOf(visible.target));
+      }, { root: deck, threshold: [0.55, 0.72] });
+
+      slides.forEach(slide => observer.observe(slide));
+      prev.addEventListener('click', () => goTo(activeIndex - 1));
+      next.addEventListener('click', () => goTo(activeIndex + 1));
+
+      window.addEventListener('keydown', (event) => {
+        if (['ArrowDown', 'PageDown', ' '].includes(event.key)) {
+          event.preventDefault();
+          goTo(activeIndex + 1);
+        }
+        if (['ArrowUp', 'PageUp'].includes(event.key)) {
+          event.preventDefault();
+          goTo(activeIndex - 1);
+        }
+        if (event.key === 'Home') goTo(0);
+        if (event.key === 'End') goTo(slides.length - 1);
+      });
+
+      // ---- elastic anti-scroll: block forward scroll until narration ends ----
+      function bounce() {
+        deck.classList.remove('rubber-band');
+        void deck.offsetWidth;
+        deck.classList.add('rubber-band');
+        if (bounceTimer) clearTimeout(bounceTimer);
+        bounceTimer = setTimeout(() => deck.classList.remove('rubber-band'), 420);
+      }
+
+      let touchStartY = 0;
+      let touching = false;
+
+      deck.addEventListener('wheel', (e) => {
+        if (started && e.deltaY > 0 && !narrationDone) {
+          e.preventDefault();
+          bounce();
+        }
+      }, { passive: false });
+
+      deck.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+        touching = true;
+      }, { passive: true });
+
+      deck.addEventListener('touchmove', (e) => {
+        if (!touching || !started || narrationDone) return;
+        const draggedUp = touchStartY - e.touches[0].clientY;
+        if (draggedUp > 8) {
+          e.preventDefault();
+          const resisted = Math.min(draggedUp / 4, 36);
+          deck.style.transform = `translateY(-${resisted}px)`;
+        }
+      }, { passive: false });
+
+      deck.addEventListener('touchend', () => {
+        touching = false;
+        if (deck.style.transform) {
+          deck.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          deck.style.transform = '';
+          setTimeout(() => { deck.style.transition = ''; }, 400);
+        }
+      });
+
+      // ---- start ----
+      startBtn.addEventListener('click', () => {
+        started = true;
+        document.body.classList.add('started');
+        startOverlay.remove();
+        setActive(0);
+        playNarration(0, false);
+      });
+
+      setActive(0);
+    })();
+  </script>
+</body>
+</html>
