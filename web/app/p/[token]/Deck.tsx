@@ -84,11 +84,19 @@ export default function Deck({ data }: { data: PresentationData }) {
       if (cancelled || index >= sequence.length) return;
 
       const name = sequence[index++];
-      audio = new Audio(
-        `/narration/${name}${lang === "zh" ? "_zh" : ""}.wav`,
-      );
+      const basePath = `/narration/${name}${lang === "zh" ? "_zh" : ""}`;
+      audio = new Audio(`${basePath}.mp3`);
       audioRef.current = audio;
       audio.addEventListener("ended", playNext);
+      audio.onerror = () => {
+        // Fallback to .wav if .mp3 is not found
+        if (!cancelled && audio) {
+          const fallback = new Audio(`${basePath}.wav`);
+          audioRef.current = fallback;
+          fallback.addEventListener("ended", playNext);
+          fallback.play().catch(() => {});
+        }
+      };
       audio.play().catch(() => {
         /* Autoplay may be blocked or interrupted. */
       });

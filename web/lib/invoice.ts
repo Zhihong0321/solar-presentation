@@ -4,6 +4,9 @@
 //   -> customer (invoice.linked_customer = customer.customer_id)
 import "server-only";
 import { sql } from "./db";
+import { initPersistentStorage } from "./storage";
+
+initPersistentStorage();
 
 export type InvoiceSearchResult = {
   shareToken: string;

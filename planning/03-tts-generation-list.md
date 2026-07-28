@@ -1,34 +1,37 @@
-# TTS Generation List — MiMo Batch (EN deck, v1 script)
+# TTS Generation List — MiniMax Batch (EN deck, v1 script)
 
-Hand this file to the generation agent. It contains everything needed: strategy, exact payload template, and the full clip list with per-clip instruction + spoken text. Script source: `02-presentation-script.md` (locked draft). API reference: `docs/MIMO_TTS_GUIDE.md`.
+Hand this file to the generation agent. It contains everything needed: strategy, exact payload template, and the full clip list with per-clip instruction + spoken text. Script source: `02-presentation-script.md` (locked draft). API reference: MiniMax `t2a_v2` API.
 
-## Strategy (already decided — do not change)
+## Strategy
 
-- **11 clips**: one wav per slide, EXCEPT slide 4 (2 clips) and slide 5 (3 clips), split at animation-sync boundaries. Clip boundaries are the sync mechanism (player triggers the next animation beat on `onended`); MiMo provides no word timestamps.
-- **Model: `mimo-v2.5-tts-voiceclone` for ALL clips**, cloning from the approved anchor sample. Do NOT use `voicedesign` per-clip — it invents a slightly different voice each call and the deck would sound inconsistent.
-- **Anchor sample**: `audio/solar_pv_pitch_asian_en_v2.wav` (validated Malaysian/Singaporean-accented male consultant voice). Base64-encode it once and reuse in every request's `audio.voice` field.
-- Deliberate pauses (slide 5 question, slide 4 reveal) are **player-inserted silence between clips**, not baked into TTS.
+- **11 clips**: one audio file per slide, EXCEPT slide 4 (2 clips) and slide 5 (3 clips), split at animation-sync boundaries.
+- **Model**: `speech-02-hd` (or `speech-01-hd`) for high-fidelity speech synthesis.
+- **Voice**: `English_expressive_narrator` (or cloned custom voice_id).
 
 ## Mechanical setup
 
-- Endpoint: `POST https://token-plan-sgp.xiaomimimo.com/v1/chat/completions`
-- Headers: `api-key: <MIMO_API_KEY from credential store, id mimo-0726>` and `Content-Type: application/json`
-- curl MUST use `--data-binary @file.json` (never `--data-raw @file` — sends the literal string, 400 error)
-- Response audio is base64 at `choices[0].message.audio.data` → decode to `.wav`
-- Output directory: `audio/deck-en/` (create it), 24kHz mono PCM16 wav files
+- Endpoint: `POST https://api.minimax.io/v1/t2a_v2`
+- Headers: `Authorization: Bearer <MINIMAX_API_KEY from Hermes Vault id minimax>` and `Content-Type: application/json`
+- Output directory: `web/public/narration/` (create it), high quality mp3/wav files
 
-### Payload template (identical for every clip; only the two content fields change)
+### Payload template
 
 ```json
 {
-    "model": "mimo-v2.5-tts-voiceclone",
-    "messages": [
-        { "role": "user", "content": "<TONE INSTRUCTION from the table below>" },
-        { "role": "assistant", "content": "<SPOKEN TEXT from the table below>" }
-    ],
-    "audio": {
-        "format": "wav",
-        "voice": "data:audio/wav;base64,<BASE64 OF audio/solar_pv_pitch_asian_en_v2.wav>"
+    "model": "speech-02-hd",
+    "text": "<SPOKEN TEXT from the table below>",
+    "stream": false,
+    "voice_setting": {
+        "voice_id": "English_expressive_narrator",
+        "speed": 1.0,
+        "vol": 1.0,
+        "pitch": 0
+    },
+    "audio_setting": {
+        "sample_rate": 32000,
+        "bitrate": 128000,
+        "format": "mp3",
+        "channel": 1
     }
 }
 ```
