@@ -120,16 +120,20 @@ export function getSlideSpokenText({
   data: PresentationData;
   lang: "en" | "zh";
 }): { text: string; isDefault: boolean } {
-  const currentBill = data.currentBill ?? 380;
-  const newBill = data.newBill ?? 95;
-  const savingPercent = data.savingPercent ?? 75;
-  const monthlyGenerationKwh = data.monthlyGenerationKwh ?? 860;
-  const panelQty = data.panelQty ?? 13;
-  const panelWatt = data.panelWatt ?? 650;
+  // Rounded to match exactly what the screen displays (rm()/Math.round in
+  // ChineseDeck.tsx / EnglishDeck.tsx use 0dp for money and whole percent) —
+  // the raw DB values (e.g. 504.37) must never be spoken when the screen
+  // shows the rounded figure (e.g. RM 505), or narration and display drift apart.
+  const currentBill = Math.round(data.currentBill ?? 380);
+  const newBill = Math.round(data.newBill ?? 95);
+  const savingPercent = Math.round(data.savingPercent ?? 75);
+  const monthlyGenerationKwh = Math.round(data.monthlyGenerationKwh ?? 860);
+  const panelQty = Math.round(data.panelQty ?? 13);
+  const panelWatt = Math.round(data.panelWatt ?? 650);
   const panelName = data.panelName || "JinkoSolar";
   const inverterName = data.inverterName || "SAJ";
   const systemKwp = data.systemKwp ?? 8.45;
-  const finalPrice = data.finalPrice ?? 24200;
+  const finalPrice = Math.round(data.finalPrice ?? 24200);
   const paybackYears = data.paybackYears ?? 6;
 
   const isEN = lang === "en";

@@ -161,6 +161,16 @@ button {
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
 }
+.deck.rubber-band {
+  animation: deck-rubber-band 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+@keyframes deck-rubber-band {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(-14px); }
+  55% { transform: translateY(4px); }
+  75% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
 .slide {
   min-height: 100dvh;
   scroll-snap-align: start;
