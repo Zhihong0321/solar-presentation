@@ -303,7 +303,10 @@ export default function Deck({ data }: { data: PresentationData }) {
     };
   }, [started]);
 
-  const firstName = data.customerName?.split(" ")[0] ?? null;
+  // Full customer name — do NOT split to first word only, it was cutting
+  // multi-word names in half everywhere this is shown (cover title, start
+  // screen greeting).
+  const firstName = data.customerName ?? null;
 
   return (
     <div className={`phone cn-mode ${lang === "en" ? "en-mode" : "zh-mode"}`}>
