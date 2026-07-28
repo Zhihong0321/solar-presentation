@@ -41,6 +41,11 @@ const START_COPY = {
   },
 };
 
+const NEXT_CUE_COPY: Record<Lang, string> = {
+  en: "Scroll down",
+  zh: "向下滑动",
+};
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function Deck({ data }: { data: PresentationData }) {
@@ -58,6 +63,9 @@ export default function Deck({ data }: { data: PresentationData }) {
   // playing. Read by the wheel/touch lock below — kept as a ref (not
   // state) since it's only ever read inside event handlers, not rendered.
   const narrationDoneRef = useRef(true);
+  // Mirrors narrationDoneRef but as state, purely to drive the "scroll
+  // down" cue below — the ref stays the source of truth the lock reads.
+  const [canAdvance, setCanAdvance] = useState(false);
   const copy = START_COPY[lang];
 
   // 3s loading beat on the cover, purely cosmetic — gives the prefetch
@@ -144,11 +152,13 @@ export default function Deck({ data }: { data: PresentationData }) {
     let audio: HTMLAudioElement | null = null;
     let index = 0;
     narrationDoneRef.current = sequence.length === 0;
+    setCanAdvance(narrationDoneRef.current);
 
     const playNext = async () => {
       if (cancelled) return;
       if (index >= sequence.length) {
         narrationDoneRef.current = true;
+        setCanAdvance(true);
         return;
       }
 
@@ -355,6 +365,13 @@ export default function Deck({ data }: { data: PresentationData }) {
           />
         ))}
       </div>
+
+      {started && canAdvance && active < SLIDES - 1 ? (
+        <div className="next-cue" aria-hidden="true">
+          <span className="next-cue-arrow" />
+          <span className="next-cue-label">{NEXT_CUE_COPY[lang]}</span>
+        </div>
+      ) : null}
 
       <div className="deck" ref={scroller}>
         {lang === "zh" ? (
