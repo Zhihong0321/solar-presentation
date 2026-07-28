@@ -362,6 +362,20 @@ export default function ChineseDeck({
           <span className="cn-brand-mark">E</span>
           <p><strong>ETERNALGY SOLAR</strong>让长期价值，从今天开始。</p>
         </div>
+        <a
+          className="cn-back-link"
+          href={`https://calculator.atap.solar/view/${data.shareToken}`}
+          data-reveal
+        >
+          ← 返回报价页面
+        </a>
+        <a
+          className="cn-back-link"
+          href="/Why-Eternalgy-Solar-Simulation-is-Precise-ZH.html"
+          data-reveal
+        >
+          为什么我们的模拟计算准确 →
+        </a>
       </section>
     </>
   );

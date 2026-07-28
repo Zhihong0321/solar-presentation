@@ -361,6 +361,20 @@ export default function EnglishDeck({ data }: { data: PresentationData }) {
           <span className="cn-brand-mark">E</span>
           <p><strong>ETERNALGY SOLAR</strong>LONG-TERM VALUE STARTS TODAY.</p>
         </div>
+        <a
+          className="cn-back-link"
+          href={`https://calculator.atap.solar/view/${data.shareToken}`}
+          data-reveal
+        >
+          ← Return to Invoice
+        </a>
+        <a
+          className="cn-back-link"
+          href="/Why-Eternalgy-Solar-Simulation-is-Precise.html"
+          data-reveal
+        >
+          Why our simulation is precise →
+        </a>
       </section>
     </>
   );
