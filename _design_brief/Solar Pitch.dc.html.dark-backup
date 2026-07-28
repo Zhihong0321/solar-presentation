@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#08080D;overscroll-behavior:none}
+a{color:#F2B23E}a:hover{color:#FFCE6B}
+#deck::-webkit-scrollbar{display:none}
+@keyframes glowPulse{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:.85;transform:scale(1.18)}}
+@keyframes tapRing{0%{transform:scale(.85);opacity:.9}75%{transform:scale(1.6);opacity:0}100%{opacity:0}}
+@keyframes dropflow{0%{transform:translateY(-8px);opacity:0}18%{opacity:1}82%{opacity:1}100%{transform:translateY(58px);opacity:0}}
+@keyframes ctaPulse{0%,100%{box-shadow:0 0 0 0 rgba(242,178,62,.5)}50%{box-shadow:0 0 26px 8px rgba(242,178,62,.22)}}
+@keyframes kenburns{from{transform:scale(1.06) translate(0,0)}to{transform:scale(1.2) translate(-3%,-2%)}}
+@keyframes floatOrb{0%,100%{transform:translate(0,0)}50%{transform:translate(14px,-20px)}}
+@keyframes breathe{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes nudge{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(9px);opacity:1}}
+</style>
+</helmet>
+<div id="deck" ref="{{ setScroll }}" onScroll="{{ onScroll }}" style="height:100dvh;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;background:#08080D;color:#F4F1EA;font-family:'Space Grotesk',system-ui,sans-serif;scrollbar-width:none;position:relative">
+
+  <section data-screen-label="0 Cover" onClick="{{ begin }}" style="height:100dvh;scroll-snap-align:start;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;box-sizing:border-box;cursor:pointer">
+    <div style="position:absolute;top:-15%;left:50%;margin-left:-160px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(242,178,62,.28) 0%,rgba(242,178,62,0) 70%);animation:glowPulse 6s ease-in-out infinite"></div>
+    <div style="position:absolute;bottom:8%;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(242,178,62,.12) 0%,rgba(242,178,62,0) 70%);animation:floatOrb 9s ease-in-out infinite"></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:26px;text-align:center;position:relative">
+      <img src="assets/logo-02.png" alt="Eternalgy" style="width:210px;transition:opacity 1.2s ease,transform 1.2s ease;{{ r.s0logo }}">
+      <h1 style="margin:0;font-size:clamp(30px,8.5vw,38px);line-height:1.18;font-weight:700;letter-spacing:-.01em;white-space:pre-line;transition:opacity .9s ease,transform .9s ease;{{ r.s0title }}">{{ t.s0h1 }}</h1>
+      <p style="margin:0;font-size:17px;line-height:1.5;color:#B8B2A4;max-width:300px;transition:opacity .9s ease,transform .9s ease;{{ r.s0thesis }}">{{ t.s0thesisPre }}<span style="color:#F2B23E;font-weight:600">{{ t.s0thesisEm }}</span></p>
+    </div>
+    <div style="position:absolute;bottom:64px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:14px;transition:opacity .6s ease;opacity:{{ tapOp }};pointer-events:none">
+      <div style="position:relative;width:58px;height:58px;display:flex;align-items:center;justify-content:center">
+        <div style="position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(242,178,62,.7);animation:tapRing 2.2s ease-out infinite"></div>
+        <div style="width:14px;height:14px;border-radius:50%;background:#F2B23E"></div>
+      </div>
+      <div style="font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#F2B23E">{{ t.tap }}</div>
+    </div>
+  </section>
+
+  <section data-screen-label="1 Your Bill" style="height:100dvh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:32px 26px;box-sizing:border-box;position:relative;overflow:hidden">
+    <div style="font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:#F2B23E;opacity:.9">{{ t.s1eyebrow }}</div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:20px 22px;transition:opacity .7s cubic-bezier(.22,.7,.25,1),transform .7s cubic-bezier(.22,.7,.25,1);{{ r.s1cur }}">
+      <div style="font-size:13px;color:#8F8A7E;margin-bottom:6px">{{ t.s1curLabel }}</div>
+      <div style="font-size:52px;font-weight:700;letter-spacing:-.02em;line-height:1;color:#DCD6C8">RM {{ c.bill }}<span style="font-size:16px;font-weight:500;color:#8F8A7E">{{ t.perMo }}</span></div>
+    </div>
+    <div style="align-self:center;color:#F2B23E;font-size:26px;line-height:1;transition:opacity .5s ease,transform .5s ease;{{ r.s1arrow }}">↓</div>
+    <div style="background:linear-gradient(160deg,rgba(242,178,62,.14),rgba(242,178,62,.04));border:1px solid rgba(242,178,62,.45);border-radius:18px;padding:20px 22px;position:relative;box-shadow:0 8px 40px rgba(242,178,62,.1);transition:opacity .7s cubic-bezier(.22,.7,.25,1),transform .7s cubic-bezier(.22,.7,.25,1);{{ r.s1new }}">
+      <div style="font-size:13px;color:#E8C685;margin-bottom:6px">{{ t.s1withLabel }}</div>
+      <div style="font-size:60px;font-weight:700;letter-spacing:-.02em;line-height:1;color:#FFCE6B">RM {{ c.nb }}<span style="font-size:16px;font-weight:500;color:#C9A25C">{{ t.perMo }}</span></div>
+      <div style="position:absolute;top:-18px;right:16px;background:#F2B23E;color:#171207;font-weight:700;font-size:17px;padding:10px 14px;border-radius:99px;box-shadow:0 6px 24px rgba(242,178,62,.45);transition:opacity .45s cubic-bezier(.34,1.56,.64,1),transform .45s cubic-bezier(.34,1.56,.64,1);{{ r.s1badge }}">−{{ c.pct }}%</div>
+    </div>
+    <p style="margin:6px 0 0;font-size:16px;line-height:1.5;color:#B8B2A4;transition:opacity .8s ease,transform .8s ease;{{ r.s1tail }}">{{ t.s1tailPre }}<span style="color:#F4F1EA;font-weight:600">{{ t.s1tailEm }}</span></p>
+  </section>
+
+  <section data-screen-label="2 How We Calculated" style="height:100dvh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:28px 26px;box-sizing:border-box;overflow:hidden">
+    <div style="font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:#F2B23E;margin-bottom:6px">{{ t.s2eyebrow }}</div>
+    <div style="align-self:center;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px 26px;transition:opacity .7s ease,transform .7s ease;{{ r.s2gen }}">
+      <div style="font-size:40px;font-weight:700;line-height:1;letter-spacing:-.02em">{{ c.gen }} <span style="font-size:15px;font-weight:500;color:#8F8A7E">{{ t.kwhMo }}</span></div>
+      <div style="font-size:12px;color:#8F8A7E;margin-top:4px">{{ t.s2genLabel }}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+        <div style="height:54px;width:2px;background:rgba(242,178,62,.18);position:relative;overflow:visible;opacity:{{ flowOp }};transition:opacity .6s ease">
+          <div style="position:absolute;left:-2px;top:0;width:6px;height:6px;border-radius:50%;background:#F2B23E;animation:dropflow 1.5s linear infinite"></div>
+          <div style="position:absolute;left:-2px;top:0;width:6px;height:6px;border-radius:50%;background:#F2B23E;animation:dropflow 1.5s linear .75s infinite"></div>
+        </div>
+        <div style="width:100%;box-sizing:border-box;text-align:center;background:rgba(242,178,62,.08);border:1px solid rgba(242,178,62,.3);border-radius:14px;padding:12px 10px;transition:opacity .7s ease,transform .7s ease;{{ r.s2left }}">
+          <div style="font-size:26px;font-weight:700;color:#FFCE6B;line-height:1">40%</div>
+          <div style="font-size:12px;color:#B8B2A4;margin-top:4px;line-height:1.35">{{ t.s2leftLabel }}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+        <div style="height:54px;width:2px;background:rgba(242,178,62,.18);position:relative;opacity:{{ flowOp }};transition:opacity .6s ease">
+          <div style="position:absolute;left:-2px;top:0;width:6px;height:6px;border-radius:50%;background:#F2B23E;animation:dropflow 1.5s linear .4s infinite"></div>
+          <div style="position:absolute;left:-2px;top:0;width:6px;height:6px;border-radius:50%;background:#F2B23E;animation:dropflow 1.5s linear 1.15s infinite"></div>
+        </div>
+        <div style="width:100%;box-sizing:border-box;text-align:center;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px 10px;transition:opacity .7s ease,transform .7s ease;{{ r.s2right }}">
+          <div style="font-size:26px;font-weight:700;line-height:1">60%</div>
+          <div style="font-size:12px;color:#B8B2A4;margin-top:4px;line-height:1.35">{{ t.s2rightLabel }}</div>
+        </div>
+      </div>
+    </div>
+    <div style="align-self:center;color:#F2B23E;font-size:20px;line-height:1;opacity:{{ flowOp }};transition:opacity .6s ease">↓ ↓</div>
+    <div style="align-self:center;text-align:center;background:linear-gradient(160deg,rgba(242,178,62,.16),rgba(242,178,62,.05));border:1px solid rgba(242,178,62,.5);border-radius:16px;padding:14px 30px;box-shadow:0 8px 36px rgba(242,178,62,.12);transition:opacity .7s ease,transform .7s ease;{{ r.s2conv }}">
+      <div style="font-size:12px;color:#E8C685">{{ t.s2newBillLabel }}</div>
+      <div style="font-size:44px;font-weight:700;line-height:1.05;color:#FFCE6B;letter-spacing:-.02em">RM {{ c.nb2 }}<span style="font-size:14px;color:#C9A25C;font-weight:500">{{ t.perMo }}</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;align-items:center">
+      <div style="font-size:12.5px;color:#B8B2A4;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:99px;padding:7px 14px;transition:opacity .6s ease,transform .6s ease;{{ r.s2chip }}">{{ t.s2chip }}</div>
+      <div style="font-size:12px;color:#8F8A7E;text-align:center;line-height:1.5;max-width:300px;transition:opacity .8s ease,transform .8s ease;{{ r.s2tag }}">{{ t.s2tagPre }}<span style="color:#F2B23E">{{ t.s2tagEm }}</span>{{ t.s2tagPost }}</div>
+    </div>
+  </section>
+
+  <section data-screen-label="3 Your Package" style="height:100dvh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;gap:16px;padding:32px 26px;box-sizing:border-box;overflow:hidden">
+    <div style="font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:#F2B23E">{{ t.s3eyebrow }}</div>
+    <div style="transition:opacity .7s ease,transform .7s ease;{{ r.s3kwp }}">
+      <div style="font-size:74px;font-weight:700;line-height:1;letter-spacing:-.03em">{{ c.kwp }}<span style="font-size:22px;font-weight:500;color:#8F8A7E">{{ t.kwpUnit }}</span></div>
+      <div style="font-size:14px;color:#8F8A7E;margin-top:6px">{{ t.s3sizedLabel }}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:16px;transition:opacity .7s ease,transform .7s ease;{{ r.s3panel }}">
+      <div style="background:#fff;border-radius:10px;padding:6px 8px;flex:0 0 auto;display:flex;align-items:center"><img src="assets/jinko-logo.svg" alt="JinkoSolar" style="height:20px;display:block"></div>
+      <div style="min-width:0">
+        <div style="font-size:15px;font-weight:600;line-height:1.3;white-space:pre-line">{{ t.s3panelName }}</div>
+        <div style="display:inline-block;margin-top:6px;font-size:10.5px;letter-spacing:.04em;color:#E8C685;border:1px solid rgba(242,178,62,.4);border-radius:99px;padding:3px 9px;transition:opacity .5s cubic-bezier(.34,1.56,.64,1),transform .5s cubic-bezier(.34,1.56,.64,1);{{ r.s3badge }}">{{ t.s3badge }}</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:16px;transition:opacity .7s ease,transform .7s ease;{{ r.s3inv }}">
+      <div style="background:#fff;border-radius:10px;padding:6px 8px;flex:0 0 auto;display:flex;align-items:center"><img src="assets/saj-logo.jpg" alt="SAJ" style="height:20px;display:block"></div>
+      <div style="font-size:15px;font-weight:600">{{ t.s3invName }}</div>
+    </div>
+    <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;color:#8F8A7E;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.14);border-radius:12px;padding:12px 16px;text-align:center;transition:opacity .7s ease,transform .7s ease;{{ r.s3formula }}">13 × 650W ÷ 1000 = <span style="color:#F2B23E">8.45 kWp</span></div>
+  </section>
+
+  <section data-screen-label="4 Forecast You Can Trust" style="height:100dvh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:30px 26px;box-sizing:border-box;overflow:hidden">
+    <div style="font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:#F2B23E">{{ t.s4eyebrow }}</div>
+    <div style="font-size:14px;color:#8F8A7E;transition:opacity .7s ease,transform .7s ease;{{ r.s4warn }}">{{ t.s4warn }}</div>
+    <h2 style="margin:0;font-size:27px;line-height:1.25;font-weight:700;letter-spacing:-.01em;transition:opacity .7s ease,transform .7s ease;{{ r.s4trick }}">{{ t.s4trickPre }}<span style="color:#FF7A5C">{{ t.s4trickEm }}</span></h2>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div style="background:rgba(255,122,92,.1);border:1px solid rgba(255,122,92,.35);border-radius:12px;padding:9px 13px;font-size:15px;font-weight:600;color:#FFB4A1;transition:opacity .45s cubic-bezier(.34,1.56,.64,1),transform .45s cubic-bezier(.34,1.56,.64,1);{{ r.s4rm50 }}">{{ t.rm50 }}</div>
+      <div style="font-size:15px;font-weight:600;color:#8F8A7E;transition:opacity .4s cubic-bezier(.34,1.56,.64,1),transform .4s cubic-bezier(.34,1.56,.64,1);{{ r.s4x12 }}">× 12</div>
+      <div style="font-size:15px;font-weight:600;color:#8F8A7E;transition:opacity .4s cubic-bezier(.34,1.56,.64,1),transform .4s cubic-bezier(.34,1.56,.64,1);{{ r.s4x20 }}">{{ t.x20 }}</div>
+    </div>
+    <div style="transition:opacity .6s ease,transform .6s ease;{{ r.s4x20 }}">
+      <div style="font-size:56px;font-weight:700;line-height:1;letter-spacing:-.02em;color:#FF7A5C">− RM {{ c.loss }}</div>
+      <div style="font-size:13px;color:#8F8A7E;margin-top:6px">{{ t.s4lossLabel }}</div>
+    </div>
+    <div style="font-size:17px;font-weight:600;color:#F4F1EA;transition:opacity .8s ease,transform .8s ease;{{ r.s4lies }}">{{ t.s4lies }}</div>
+    <div style="height:1px;background:rgba(255,255,255,.08);margin:2px 0"></div>
+    <div style="align-self:flex-start;background:linear-gradient(160deg,rgba(242,178,62,.18),rgba(242,178,62,.06));border:1px solid rgba(242,178,62,.5);border-radius:14px;padding:12px 18px;font-size:14px;font-weight:700;letter-spacing:.06em;color:#FFCE6B;box-shadow:0 8px 32px rgba(242,178,62,.12);transition:opacity .5s cubic-bezier(.34,1.56,.64,1),transform .5s cubic-bezier(.34,1.56,.64,1);{{ r.s4badge }}">{{ t.s4badge }}</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#B8B2A4;transition:opacity .6s ease,transform .6s ease;{{ r.s4flash }}"><span style="color:#F2B23E">{{ t.s4flashA }}</span>{{ t.s4flashMid }}<span style="color:#F2B23E">{{ t.s4flashB }}</span><span style="color:#8F8A7E">{{ t.s4flashTail }}</span></div>
+    <div style="font-size:17px;color:#F4F1EA;transition:opacity .8s ease,transform .8s ease;{{ r.s4notest }}">{{ t.s4notestPre }}<span style="color:#F2B23E;font-weight:700">{{ t.s4notestEm }}</span></div>
+  </section>
+
+  <section data-screen-label="5 Built to Survive" style="height:100dvh;scroll-snap-align:start;position:relative;overflow:hidden;background:#050507">
+    <video src="assets/jinko-degradation.mp4" autoPlay="{{ true }}" muted="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.1;filter:saturate(.3)"></video>
+    <div style="position:absolute;inset:0;background:#000;opacity:{{ dimOp }};transition:opacity 1.2s ease;pointer-events:none"></div>
+    <div style="position:absolute;top:30px;left:26px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:#F2B23E">{{ t.s5eyebrow }}</div>
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:22px;padding:32px 28px;box-sizing:border-box;opacity:{{ qBlockOp }};transition:opacity 1s ease;pointer-events:none">
+      <p style="margin:0;font-size:22px;line-height:1.45;color:#B8B2A4;transition:opacity .9s ease,transform .9s ease;{{ r.s5l1 }}">{{ t.s5l1Pre }}<span style="color:#F4F1EA;font-weight:600">{{ t.s5l1Em }}</span>{{ t.s5l1Mid }}<br>{{ t.s5l1Tail }}</p>
+      <p style="margin:0;font-size:22px;line-height:1.45;color:#B8B2A4;transition:opacity .9s ease,transform .9s ease;{{ r.s5l2 }}">{{ t.s5l2Pre }}<span style="color:#F4F1EA;font-weight:600">{{ t.s5l2Em }}</span>{{ t.s5l2Mid }}<br>{{ t.s5l2Tail }}</p>
+      <p style="margin:0;font-size:28px;line-height:1.4;font-weight:700;color:#FFCE6B;transition:opacity 1.1s ease,transform 1.1s ease;{{ r.s5q }}">{{ t.s5qLine1 }}<br>{{ t.s5qLine2 }}</p>
+    </div>
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:20px;padding:32px 28px;box-sizing:border-box;opacity:{{ yearsOp }};transition:opacity 1s ease;pointer-events:none">
+      <div style="transition:opacity .9s ease,transform .9s ease;{{ r.s5years }}">
+        <div style="font-size:15px;color:#8F8A7E;margin-bottom:8px">{{ t.s5yearsLabel }}</div>
+        <div style="font-size:64px;font-weight:700;line-height:1;letter-spacing:-.02em">15–20<span style="font-size:26px;font-weight:600;color:#F2B23E">{{ t.s5yearsUnit }}</span></div>
+      </div>
+      <p style="margin:0;font-size:19px;line-height:1.5;color:#B8B2A4;transition:opacity .9s ease,transform .9s ease;{{ r.s5fail }}">{{ t.s5failLine1 }}<br>{{ t.s5failLine2 }}<br>{{ t.s5failLine3 }}</p>
+      <div style="font-size:34px;font-weight:600;color:#F4F1EA;opacity:{{ fireOp }};transition:opacity 1.4s ease">{{ t.s5fire }}</div>
+    </div>
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:24px;padding:32px 28px;box-sizing:border-box;text-align:center;opacity:{{ provOp }};transition:opacity 1.2s ease;pointer-events:none">
+      <div style="font-family:'Noto Serif SC',serif;font-size:31px;line-height:1.75;font-weight:700;color:#FFCE6B;transition:opacity 1.2s ease,transform 1.2s ease;{{ r.s5prov }}">真正的划算是诚信，<br>真正的昂贵是风险。</div>
+      <div style="font-size:15px;line-height:1.6;color:#B8B2A4;font-style:italic;transition:opacity 1s ease,transform 1s ease;{{ r.s5sub }}">{{ t.s5subLine1 }}<br>{{ t.s5subLine2 }}</div>
+    </div>
+  </section>
+
+  <section data-screen-label="6 We Don't Disappear" style="height:100dvh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:28px 26px;box-sizing:border-box;overflow:hidden">
+    <div style="font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:#F2B23E">{{ t.s6eyebrow }}</div>
+    <h2 style="margin:0;font-size:26px;line-height:1.25;font-weight:700;letter-spacing:-.01em;transition:opacity .7s ease,transform .7s ease;{{ r.s6msg }}">{{ t.s6h2Line1 }}<br>{{ t.s6h2Line2 }}</h2>
+    <div style="display:flex;align-items:center;gap:14px;transition:opacity .7s ease,transform .7s ease;{{ r.s6img }}">
+      <img src="assets/roof-specialist.webp" alt="In-house roof team" style="width:96px;height:68px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,.1);flex:0 0 auto">
+      <div style="font-size:13.5px;line-height:1.45;color:#B8B2A4">{{ t.s6teamPre }}<span style="color:#F4F1EA;font-weight:600">{{ t.s6teamEm }}</span>{{ t.s6teamPost }}</div>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:10px;transition:opacity .7s ease,transform .7s ease;{{ r.s6stat }}">
+      <div style="font-size:54px;font-weight:700;line-height:1;letter-spacing:-.02em;color:#FFCE6B">{{ c.proj }}</div>
+      <div style="font-size:14px;color:#8F8A7E;line-height:1.3">{{ t.s6projLabel1 }}<br>{{ t.s6projLabel2 }}</div>
+    </div>
+    <div style="position:relative;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.09)">
+      <img src="assets/all-roof-type.webp" alt="Every roof type" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.22">
+      <div style="position:relative;display:flex;flex-wrap:wrap;gap:7px;padding:13px">
+        <div style="font-size:12px;font-weight:600;background:rgba(8,8,13,.75);border:1px solid rgba(242,178,62,.35);color:#E8C685;border-radius:99px;padding:5px 12px;transition:opacity .4s cubic-bezier(.34,1.56,.64,1),transform .4s cubic-bezier(.34,1.56,.64,1);{{ r.s6r1 }}">{{ t.terraceTag }}</div>
+        <div style="font-size:12px;font-weight:600;background:rgba(8,8,13,.75);border:1px solid rgba(242,178,62,.35);color:#E8C685;border-radius:99px;padding:5px 12px;transition:opacity .4s cubic-bezier(.34,1.56,.64,1),transform .4s cubic-bezier(.34,1.56,.64,1);{{ r.s6r2 }}">{{ t.bungalowTag }}</div>
+        <div style="font-size:12px;font-weight:600;background:rgba(8,8,13,.75);border:1px solid rgba(242,178,62,.35);color:#E8C685;border-radius:99px;padding:5px 12px;transition:opacity .4s cubic-bezier(.34,1.56,.64,1),transform .4s cubic-bezier(.34,1.56,.64,1);{{ r.s6r3 }}">{{ t.farmTag }}</div>
+        <div style="font-size:12px;font-weight:600;background:rgba(8,8,13,.75);border:1px solid rgba(242,178,62,.35);color:#E8C685;border-radius:99px;padding:5px 12px;transition:opacity .4s cubic-bezier(.34,1.56,.64,1),transform .4s cubic-bezier(.34,1.56,.64,1);{{ r.s6r4 }}">{{ t.industrialTag }}</div>
+        <div style="width:100%;font-size:11.5px;color:#B8B2A4">{{ t.s6everyRoof }}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <div style="background:#fff;border-radius:10px;padding:7px;display:flex;align-items:center;justify-content:center;height:34px;transition:opacity .45s cubic-bezier(.34,1.56,.64,1),transform .45s cubic-bezier(.34,1.56,.64,1);{{ r.s6c1 }}"><img src="assets/seda.png" alt="SEDA" style="max-width:100%;max-height:100%;object-fit:contain"></div>
+      <div style="background:#fff;border-radius:10px;padding:7px;display:flex;align-items:center;justify-content:center;height:34px;transition:opacity .45s cubic-bezier(.34,1.56,.64,1),transform .45s cubic-bezier(.34,1.56,.64,1);{{ r.s6c2 }}"><img src="assets/cidb.png" alt="CIDB" style="max-width:100%;max-height:100%;object-fit:contain"></div>
+      <div style="background:#fff;border-radius:10px;padding:7px;display:flex;align-items:center;justify-content:center;height:34px;transition:opacity .45s cubic-bezier(.34,1.56,.64,1),transform .45s cubic-bezier(.34,1.56,.64,1);{{ r.s6c3 }}"><img src="assets/myhijau.jpg" alt="MyHIJAU" style="max-width:100%;max-height:100%;object-fit:contain"></div>
+      <div style="background:#fff;border-radius:10px;padding:7px;display:flex;align-items:center;justify-content:center;height:34px;transition:opacity .45s cubic-bezier(.34,1.56,.64,1),transform .45s cubic-bezier(.34,1.56,.64,1);{{ r.s6c4 }}"><img src="assets/msig.png" alt="MSIG" style="max-width:100%;max-height:100%;object-fit:contain"></div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;transition:opacity .7s ease,transform .7s ease;{{ r.s6badges }}">
+      <div style="font-size:10.5px;color:#8F8A7E;border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:4px 10px">{{ t.s6badge1 }}</div>
+      <div style="font-size:10.5px;color:#8F8A7E;border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:4px 10px">{{ t.s6badge2 }}</div>
+      <div style="font-size:10.5px;color:#8F8A7E;border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:4px 10px">{{ t.s6badge3 }}</div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;height:130px;border:1px solid rgba(255,255,255,.1);transition:opacity 1s ease,transform 1s ease;{{ r.s6photo }}">
+      <img src="assets/group-photo.jpg" alt="The Eternalgy team" style="width:100%;height:100%;object-fit:cover;animation:kenburns 14s ease-out forwards">
+    </div>
+  </section>
+
+  <section data-screen-label="7 The Ask" style="height:100dvh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;gap:16px;padding:32px 26px;box-sizing:border-box;overflow:hidden;position:relative">
+    <div style="position:absolute;top:-10%;right:-20%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(242,178,62,.16) 0%,rgba(242,178,62,0) 70%);animation:glowPulse 7s ease-in-out infinite"></div>
+    <div style="font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:#F2B23E">{{ t.s7eyebrow }}</div>
+    <div style="font-size:15px;color:#B8B2A4;transition:opacity .7s ease,transform .7s ease;{{ r.s7lead }}">{{ t.s7lead }}</div>
+    <div style="background:linear-gradient(160deg,rgba(242,178,62,.14),rgba(242,178,62,.04));border:1px solid rgba(242,178,62,.45);border-radius:18px;padding:22px;box-shadow:0 8px 40px rgba(242,178,62,.1);transition:opacity .7s ease,transform .7s ease;{{ r.s7price }}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <span style="font-size:16px;color:#8F8A7E;text-decoration:line-through">RM 26,800</span>
+        <span style="font-size:10.5px;font-weight:700;letter-spacing:.08em;background:#F2B23E;color:#171207;border-radius:99px;padding:3px 9px">{{ t.s7promo }}</span>
+      </div>
+      <div style="font-size:56px;font-weight:700;line-height:1;letter-spacing:-.02em;color:#FFCE6B">RM {{ c.price }}</div>
+      <div style="font-size:13px;color:#E8C685;margin-top:6px">{{ t.s7afterDiscount }}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;transition:opacity .7s ease,transform .7s ease;{{ r.s7pay }}">
+      <div style="font-size:34px;font-weight:700;color:#F4F1EA;line-height:1">≈6<span style="font-size:16px;font-weight:600;color:#F2B23E">{{ t.s7yrsUnit }}</span></div>
+      <div style="font-size:13.5px;color:#B8B2A4;line-height:1.4">{{ t.s7payPre }}<span style="color:#F4F1EA;font-weight:600">{{ t.s7payEm }}</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 16px;font-size:12.5px;color:#B8B2A4;line-height:1.5;transition:opacity .7s ease,transform .7s ease;{{ r.s7warr }}">
+      <div><span style="color:#F2B23E">{{ t.s7warrPanelLabel }}</span>{{ t.s7warrPanelText }}</div>
+      <div><span style="color:#F2B23E">{{ t.s7warrInvLabel }}</span>{{ t.s7warrInvText }}</div>
+      <div><span style="color:#F2B23E">{{ t.s7warrInstallLabel }}</span>{{ t.s7warrInstallText }}</div>
+    </div>
+    <div style="background:#F2B23E;color:#171207;font-size:17px;font-weight:700;text-align:center;border-radius:99px;padding:17px 20px;margin-top:4px;cursor:pointer;transition:opacity .7s ease,transform .7s ease;{{ r.s7cta }};{{ ctaAnim }}">{{ t.s7cta }}</div>
+  </section>
+
+  <img src="assets/logo-02.png" alt="Eternalgy" style="position:fixed;top:18px;left:50%;transform:translateX(-50%);width:104px;z-index:25;opacity:{{ logoOp }};transition:opacity .6s ease;pointer-events:none">
+
+  <div style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:25;opacity:{{ presentOp }};transition:opacity .4s ease;pointer-events:none">
+    <div style="display:flex;align-items:center;gap:8px;background:rgba(8,8,13,.55);border:1px solid rgba(242,178,62,.4);border-radius:99px;padding:6px 14px;backdrop-filter:blur(4px);animation:breathe 2.4s ease-in-out infinite">
+      <span style="width:8px;height:8px;border-radius:50%;background:#F2B23E;box-shadow:0 0 8px rgba(242,178,62,.8)"></span>
+      <span style="font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#F2B23E;font-weight:600">{{ t.presenting }}</span>
+    </div>
+  </div>
+
+  <div style="position:fixed;left:0;right:0;bottom:28px;z-index:24;display:flex;flex-direction:column;align-items:center;gap:5px;opacity:{{ nextArrowOp }};transition:opacity .5s ease;pointer-events:none">
+    <span style="font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#F2B23E;font-weight:600">{{ t.next }}</span>
+    <div style="font-size:28px;line-height:1;color:#F2B23E;animation:nudge 1.4s ease-in-out infinite">↓</div>
+  </div>
+
+  <div style="position:fixed;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:20;pointer-events:none">
+    <sc-for list="{{ dots }}" as="d" hint-placeholder-count="8">
+      <div style="{{ d.s }}"></div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ showCap }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:16px;right:28px;bottom:14px;z-index:20;background:rgba(8,8,13,.85);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:11.5px;line-height:1.5;color:#B8B2A4;pointer-events:none">{{ capText }}</div>
+  </sc-if>
+
+  <div style="position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;padding:32px;box-sizing:border-box;background:#08080D;opacity:{{ landOp }};transition:opacity .7s ease;pointer-events:{{ landPe }}">
+    <div style="position:absolute;top:-14%;left:50%;margin-left:-160px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(242,178,62,.24) 0%,rgba(242,178,62,0) 70%);animation:glowPulse 6s ease-in-out infinite"></div>
+    <img src="assets/logo-02.png" alt="Eternalgy" style="width:216px;position:relative">
+    <div style="font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#8F8A7E;position:relative">Choose language · 选择语言</div>
+    <div style="display:flex;gap:16px;position:relative">
+      <div onClick="{{ chooseZh }}" style="cursor:pointer;min-width:132px;text-align:center;background:rgba(255,255,255,.04);border:1px solid rgba(242,178,62,.5);border-radius:16px;padding:22px 26px;box-shadow:0 8px 30px rgba(242,178,62,.08)">
+        <div style="font-family:'Noto Serif SC',serif;font-size:32px;font-weight:700;color:#F4F1EA;line-height:1">中文</div>
+        <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#8F8A7E;margin-top:9px">Mandarin</div>
+      </div>
+      <div onClick="{{ chooseEn }}" style="cursor:pointer;min-width:132px;text-align:center;background:rgba(255,255,255,.04);border:1px solid rgba(242,178,62,.5);border-radius:16px;padding:22px 26px;box-shadow:0 8px 30px rgba(242,178,62,.08)">
+        <div style="font-size:30px;font-weight:700;color:#F4F1EA;line-height:1">English</div>
+        <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#8F8A7E;margin-top:9px">英文</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844},&quot;autoAdvance&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Playback&quot;},&quot;captions&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Playback&quot;}}">
+class Component extends DCLogic {
+  state = { active: 0, begun: false, narrating: false, lang: null, beats: {}, counters: { bill: 0, nb: 380, pct: 0, gen: 0, nb2: 0, kwp: 0, loss: 0, proj: 0, price: 26800 } };
+  timers = []; rafs = {}; audioEls = null; scrollEl = null; scrollPending = false;
+
+  SEQ = [['s0'], ['s1'], ['s2'], ['s3'], ['s4a', 's4b'], ['s5a', 's5b', 's5c'], ['s6'], ['s7']];
+  GAP = { s4a: 400, s5a: 1200, s5b: 600 };
+  RESET = { 1: { bill: 0, nb: 380, pct: 0 }, 2: { gen: 0, nb2: 0 }, 3: { kwp: 0 }, 4: { loss: 0 }, 6: { proj: 0 }, 7: { price: 26800 } };
+  FINAL = { 1: { bill: 380, nb: 95, pct: 75 }, 2: { gen: 860, nb2: 95 }, 3: { kwp: 8.45 }, 4: { loss: 12000 }, 6: { proj: 140 }, 7: { price: 24200 } };
+  BEATS = {
+    0: [[0.2, 's0logo'], [1.0, 's0title'], [7.5, 's0thesis']],
+    1: [[0.5, 's1cur'], [0.8, { c: ['bill', 0, 380, 2200] }], [5.6, 's1arrow'], [6.2, 's1new'], [6.4, { c: ['nb', 380, 95, 1400] }], [9.6, 's1badge'], [9.6, { c: ['pct', 0, 75, 900] }], [11.5, 's1tail']],
+    2: [[1.5, 's2gen'], [1.8, { c: ['gen', 0, 860, 2000] }], [4.5, 's2chip'], [5.5, 's2flow'], [6.0, 's2left'], [8.5, 's2right'], [13.5, 's2conv'], [14.0, { c: ['nb2', 0, 95, 2200] }], [16.5, 's2tag']],
+    3: [[1.0, 's3kwp'], [1.2, { c: ['kwp', 0, 8.45, 1800] }], [4.0, 's3panel'], [6.5, 's3badge'], [8.5, 's3inv'], [12.5, 's3formula']],
+    4: [[1.0, 's4warn'], [3.5, 's4trick'], [6.0, 's4rm50'], [8.8, 's4x12'], [10.2, 's4x20'], [11.2, { c: ['loss', 0, 12000, 3200] }], [15.2, 's4lies'], [20.8, 's4badge'], [25.5, 's4flash'], [28.3, 's4notest']],
+    5: [[1.2, 's5l1'], [6.0, 's5l2'], [11.8, 's5qonly'], [19.3, 's5years'], [24.3, 's5fail'], [27.6, 's5dim'], [29.6, 's5fire'], [35.4, 's5prov'], [37.6, 's5sub']],
+    6: [[0.8, 's6msg'], [1.4, 's6img'], [4.3, 's6stat'], [4.5, { c: ['proj', 0, 140, 1600] }], [7.8, 's6r1'], [8.5, 's6r2'], [9.2, 's6r3'], [9.9, 's6r4'], [12.5, 's6c1'], [13.4, 's6c2'], [14.3, 's6c3'], [15.2, 's6c4'], [17.0, 's6badges'], [18.5, 's6photo']],
+    7: [[0.8, 's7lead'], [1.8, 's7price'], [2.2, { c: ['price', 26800, 24200, 2200] }], [6.5, 's7pay'], [9.0, 's7warr'], [13.5, 's7cta']]
+  };
+  NARR_EN = [
+    "Hi — and thank you for your time. In the next two minutes, I'll show you exactly what solar can do for your home… and why it matters who installs it.",
+    "Right now, your electricity bill averages three hundred and eighty ringgit a month. With solar… that drops to around ninety-five. That's a seventy-five percent saving — every single month, for decades to come.",
+    "And this number is not a guess. Your panels will generate around eight hundred and sixty kilowatt-hours a month. About forty percent powers your home directly during the day — the rest is exported to the grid for credit, calculated against your actual TNB tariff, rate by rate.",
+    "Here's the system that does it. Thirteen JinkoSolar panels — six hundred and fifty watts each, Tier-one, N-type — paired with an SAJ inverter. Eight-point-four-five kilowatts, sized precisely for your roof and your usage.",
+    "The most common trick in this industry is overclaimed savings. Even a small exaggeration compounds to over twelve thousand ringgit that never arrives. That's why we built Malaysia's first solar simulator — your forecast is calculated on your actual TNB tariff structure.",
+    "When we don't understand a product, we pick the cheapest. When we truly understand it — we avoid the cheapest. This system will sit on your roof for 15–20 years. A real bargain is honesty; what's truly expensive is risk.",
+    "We don't disappear after installation. Our in-house roof maintenance team responds to any roof issue, for the life of your system. 140 projects in a single month. Every roof type in Malaysia. Certified by SEDA, CIDB, and MyHIJAU.",
+    "Panels, inverter, installation, and every warranty — at twenty-four thousand two hundred ringgit after discount. Payback in around six years. Everything after that is pure savings. Shall we get your roof assessed?"
+  ];
+  NARR_ZH = [
+    "您好，感谢您抽出时间。接下来的两分钟，我将为您展示太阳能到底能为您的家带来什么…以及，为什么选择安装的人很重要。",
+    "目前，您每个月的电费大约是三百八十令吉。安装太阳能之后…这个数字会降到大约九十五令吉。相当于节省百分之七十五 — 而且每个月都是如此，持续数十年。",
+    "而这个数字，并不是随口估算的。您的太阳能板每个月大约能发电八百六十度。其中大约百分之四十，在白天直接供应您的家庭用电 — 剩下的则输出到电网换取电费回扣，并根据您实际的TNB电费级距，逐级精算而成。",
+    "这就是为您配置的系统。十三片JinkoSolar太阳能板 — 每片六百五十瓦，一线大厂，N型电池 — 搭配SAJ逆变器。总容量八点四五千瓦，根据您的屋顶与用电量精准配置。",
+    "这个行业最常见的手法，就是夸大节省金额。哪怕只是一点点的夸大，累积起来，也会是超过一万二千令吉，永远不会兑现的差距。这就是为什么，我们打造了马来西亚首创的太阳能模拟系统 — 您所看到的预测，都是根据您实际的TNB电费结构精算而成。",
+    "当我们不了解一个产品的时候，我们会选择最便宜的。当我们真正了解一个产品的时候 — 我们反而会避开最便宜的。这套系统，将在您的屋顶上运行十五到二十年。真正的划算，是诚信；真正的昂贵，是风险。",
+    "安装完成后，我们不会消失。我们拥有内部专属的屋顶维修团队，在系统使用期间，随时为您处理任何屋顶问题。单月完成一百四十个项目，马来西亚各类屋顶，我们都能安装。并获得SEDA、CIDB与MyHIJAU认证。",
+    "太阳能板、逆变器、安装工程，以及所有保固 — 折扣后价格为两万四千两百令吉。大约六年即可回本，之后的每一分钱，都是纯粹的节省。现在，为您预约一次免费的屋顶评估，好吗？"
+  ];
+
+  CLIPDUR = {
+    en: { s0: 10.88, s1: 13.76, s2: 19.20, s3: 17.92, s4a: 18.40, s4b: 12.96, s5a: 17.12, s5b: 16.00, s5c: 9.12, s6: 22.56, s7: 18.72 },
+    zh: { s0: 13.60, s1: 17.44, s2: 24.00, s3: 17.60, s4a: 14.08, s4b: 12.48, s5a: 17.44, s5b: 17.28, s5c: 6.24, s6: 20.96, s7: 19.36 }
+  };
+
+  T = {
+    en: {
+      tap: 'Tap to begin', presenting: 'Presenting', next: 'Next',
+      s0h1: 'What solar can really do\nfor your home', s0thesisPre: '…and why it matters ', s0thesisEm: 'who installs it.',
+      s1eyebrow: 'Your bill · before & after', s1curLabel: 'Current monthly bill', perMo: '/mo', s1withLabel: 'With solar', s1tailPre: 'Every single month — ', s1tailEm: 'for decades to come.',
+      s2eyebrow: 'How we calculated it', kwhMo: 'kWh/mo', s2genLabel: 'your panels generate', s2leftLabel: 'powers your home directly', s2rightLabel: 'exported to the grid for credit', s2newBillLabel: 'your new bill', s2chip: '☀ ~4 sun peak hours / day', s2tagPre: 'Calculated by ', s2tagEm: "Malaysia's first solar simulator", s2tagPost: ' — on your actual TNB tariff, rate by rate.',
+      s3eyebrow: 'Your package', kwpUnit: ' kWp', s3sizedLabel: 'sized precisely for your roof and usage', s3panelName: '13 × 650W JinkoSolar\nN-Type TOPCon', s3badge: 'Tier-1 · 12yr product / 30yr power', s3invName: 'SAJ String Inverter',
+      s4eyebrow: 'Why Eternalgy · 01', s4warn: 'Before you compare quotes — one thing you deserve to know.', s4trickPre: 'The most common trick in this industry: ', s4trickEm: 'overclaimed savings.', rm50: 'RM 50/mo', x20: '× 20 years', s4lossLabel: "that never arrives, across your system's lifetime", s4lies: 'Small lies compound.', s4badge: "MALAYSIA'S FIRST SOLAR SIMULATOR", s4flashA: '860 kWh', s4flashMid: ' → 40% / 60% → ', s4flashB: 'RM 95', s4flashTail: ' — on your actual TNB tariff', s4notestPre: 'The numbers you saw just now? ', s4notestEm: "They're not estimates.",
+      s5eyebrow: 'Why Eternalgy · 02', s5l1Pre: 'When we ', s5l1Em: "don't understand", s5l1Mid: ' a product…', s5l1Tail: 'we pick the cheapest.', s5l2Pre: 'When we ', s5l2Em: 'truly understand', s5l2Mid: ' it —', s5l2Tail: 'we avoid the cheapest.', s5qLine1: 'So… are you looking for', s5qLine2: 'the cheapest right now?', s5yearsLabel: 'This system will sit on your roof for', s5yearsUnit: ' YEARS', s5failLine1: 'Cheap components fail early.', s5failLine2: 'At best — a dead system.', s5failLine3: 'At worst…', s5fire: 'a fire, on your own home.', s5subLine1: 'A real bargain is honesty;', s5subLine2: "what's truly expensive is risk.",
+      s6eyebrow: 'Why Eternalgy · 03', s6h2Line1: "We don't disappear", s6h2Line2: 'after installation.', s6teamPre: 'Our ', s6teamEm: 'in-house roof maintenance team', s6teamPost: ' responds to any roof issue — for the life of your system.', s6projLabel1: 'projects', s6projLabel2: 'in a single month', terraceTag: 'Terrace', bungalowTag: 'Bungalow', farmTag: 'Farm', industrialTag: 'Industrial', s6everyRoof: 'Every roof type in Malaysia.', s6badge1: 'Maybank Exclusive Partner', s6badge2: 'SAJ Sole Distributor of Malaysia', s6badge3: 'Golden Bull Award',
+      s7eyebrow: 'Your package · the ask', s7lead: 'Panels, inverter, installation — and every warranty.', s7promo: 'PROMO', s7afterDiscount: 'after discount · all-in', s7yrsUnit: ' yrs', s7payPre: 'payback — everything after that is ', s7payEm: 'pure savings.', s7warrPanelLabel: 'Panel', s7warrPanelText: ' 12yr product · 30yr power', s7warrInvLabel: 'Inverter', s7warrInvText: ' 10yr', s7warrInstallLabel: 'Install', s7warrInstallText: ' 1yr roof-leak · 3yr workmanship · 3yr MSIG all-risk', s7cta: 'Book Your Free Roof Assessment'
+    },
+    zh: {
+      tap: '轻触开始', presenting: '讲解中', next: '下一页',
+      s0h1: '太阳能到底能为您的家\n带来什么', s0thesisPre: '…而这也取决于', s0thesisEm: '是谁为您安装。',
+      s1eyebrow: '您的电费 · 前后对比', s1curLabel: '目前每月电费', perMo: '/月', s1withLabel: '安装太阳能后', s1tailPre: '每个月都省 — ', s1tailEm: '而且持续数十年。',
+      s2eyebrow: '我们如何计算', kwhMo: 'kWh/月', s2genLabel: '您的太阳能板每月发电量', s2leftLabel: '直接供应您的家庭用电', s2rightLabel: '输出至电网换取电费回扣', s2newBillLabel: '您的新电费', s2chip: '☀ 每日约4小时日照高峰', s2tagPre: '由', s2tagEm: '马来西亚首个太阳能模拟系统', s2tagPost: '，根据您实际的TNB电费级距逐级计算。',
+      s3eyebrow: '您的方案', kwpUnit: ' kWp', s3sizedLabel: '根据您的屋顶与用电量精准配置', s3panelName: '13 片 × 650W JinkoSolar\nN型 TOPCon 电池板', s3badge: '一线大厂 · 12年产品保固 / 30年功率保证', s3invName: 'SAJ 串式逆变器',
+      s4eyebrow: '为什么选择 Eternalgy · 01', s4warn: '在您比较报价之前 — 有件事您应该知道。', s4trickPre: '这个行业最常见的手法就是：', s4trickEm: '夸大节省金额。', rm50: 'RM 50/月', x20: '× 20 年', s4lossLabel: '在系统的使用年限内，永远不会兑现', s4lies: '小小的谎言，累积成大数目。', s4badge: '马来西亚首创太阳能模拟系统', s4flashA: '860 度', s4flashMid: ' → 40% / 60% → ', s4flashB: 'RM 95', s4flashTail: ' — 根据您实际的TNB电费', s4notestPre: '您刚才看到的数字？', s4notestEm: '这不是估算，是精算。',
+      s5eyebrow: '为什么选择 Eternalgy · 02', s5l1Pre: '当我们', s5l1Em: '不了解', s5l1Mid: '一个产品的时候…', s5l1Tail: '我们会选择最便宜的。', s5l2Pre: '当我们', s5l2Em: '真正了解', s5l2Mid: '一个产品的时候 —', s5l2Tail: '我们反而会避开最便宜的。', s5qLine1: '那么…此刻的您', s5qLine2: '是否正在寻找最便宜的方案？', s5yearsLabel: '这套系统将在您的屋顶上，运行', s5yearsUnit: ' 年', s5failLine1: '廉价元件，故障来得早。', s5failLine2: '运气好，系统直接报废。', s5failLine3: '运气不好…', s5fire: '是您家中的一场火灾。', s5subLine1: '这句话，也是 Eternalgy', s5subLine2: '对每一位客户的承诺。',
+      s6eyebrow: '为什么选择 Eternalgy · 03', s6h2Line1: '安装完成后', s6h2Line2: '我们不会消失。', s6teamPre: '我们的', s6teamEm: '内部专属屋顶维修团队', s6teamPost: '，在系统使用期间随时处理任何屋顶问题。', s6projLabel1: '个项目', s6projLabel2: '单月完成', terraceTag: '排屋', bungalowTag: '独立式洋房', farmTag: '农场', industrialTag: '工业厂房', s6everyRoof: '马来西亚各类屋顶，我们都能安装。', s6badge1: 'Maybank 独家合作伙伴', s6badge2: 'SAJ 马来西亚独家代理', s6badge3: '金牛奖得主',
+      s7eyebrow: '您的方案 · 报价', s7lead: '太阳能板、逆变器、安装工程 — 以及所有保固。', s7promo: '优惠', s7afterDiscount: '折扣后 · 全包价', s7yrsUnit: ' 年', s7payPre: '回本 — 之后的每一分钱都是', s7payEm: '纯粹的节省。', s7warrPanelLabel: '太阳能板', s7warrPanelText: ' 12年产品保固 · 30年功率保证', s7warrInvLabel: '逆变器', s7warrInvText: ' 10年保固', s7warrInstallLabel: '安装工程', s7warrInstallText: ' 1年屋顶防漏 · 3年施工保固 · 3年MSIG全险保障', s7cta: '预约免费屋顶评估'
+    }
+  };
+
+  componentDidMount() {
+    this.reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    this.audioNames = ['s0', 's1', 's2', 's3', 's4a', 's4b', 's5a', 's5b', 's5c', 's6', 's7'];
+    this.audioEls = {};
+  }
+
+  loadAudio(lang) {
+    const suf = lang === 'zh' ? '_zh' : '';
+    this.audioEls = {};
+    this.audioNames.forEach(n => { const a = new Audio('audio/' + n + suf + '.wav'); a.preload = 'auto'; this.audioEls[n] = a; });
+  }
+
+  choose(lang) {
+    if (this.state.lang) return;
+    this.loadAudio(lang);
+    this.setState({ lang }, () => this.begin());
+  }
+  componentWillUnmount() { this.stopAll(); }
+
+  stopAll() {
+    this.timers.forEach(t => clearTimeout(t)); this.timers = [];
+    Object.values(this.rafs).forEach(r => cancelAnimationFrame(r)); this.rafs = {};
+    if (this.audioEls) Object.values(this.audioEls).forEach(a => { a.onended = null; a.pause(); });
+  }
+
+  count(key, from, to, dur) {
+    if (this.rafs[key]) cancelAnimationFrame(this.rafs[key]);
+    const start = performance.now();
+    const step = now => {
+      const p = Math.min(1, (now - start) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      const v = from + (to - from) * e;
+      this.setState(s => ({ counters: { ...s.counters, [key]: v } }));
+      if (p < 1) this.rafs[key] = requestAnimationFrame(step); else delete this.rafs[key];
+    };
+    this.rafs[key] = requestAnimationFrame(step);
+  }
+
+  setBeat(name) { this.setState(s => ({ beats: { ...s.beats, [name]: true } })); }
+
+  enterSlide(i, force) {
+    if (i === this.state.active && !force) return;
+    this.stopAll();
+    const prefix = 's' + i;
+    const beats = { ...this.state.beats };
+    Object.keys(beats).forEach(k => { if (k.indexOf(prefix) === 0) delete beats[k]; });
+    const counters = { ...this.state.counters, ...(this.RESET[i] || {}) };
+    this.setState({ active: i, beats, counters, narrating: false }, () => {
+      if (i === 0 && !this.state.begun) return;
+      this.runSlide(i);
+    });
+  }
+
+  slideDur(lang, i) {
+    const seq = this.SEQ[i], d = this.CLIPDUR[lang];
+    return seq.reduce((sum, name, idx) => sum + (d[name] || 0) + (idx < seq.length - 1 ? (this.GAP[name] || 0) / 1000 : 0), 0);
+  }
+
+  beatScale(i) {
+    const lang = this.state.lang || 'en';
+    if (lang === 'en') return 1;
+    const enDur = this.slideDur('en', i);
+    return enDur > 0 ? this.slideDur('zh', i) / enDur : 1;
+  }
+
+  runSlide(i) {
+    const entries = this.BEATS[i] || [];
+    if (this.reduced) {
+      const beats = { ...this.state.beats };
+      entries.forEach(([, x]) => { if (typeof x === 'string') beats[x] = true; });
+      this.setState({ beats, counters: { ...this.state.counters, ...(this.FINAL[i] || {}) } });
+    } else {
+      const scale = this.beatScale(i);
+      entries.forEach(([t, x]) => {
+        this.timers.push(setTimeout(() => {
+          if (typeof x === 'string') this.setBeat(x); else this.count(...x.c);
+        }, t * scale * 1000));
+      });
+    }
+    if (this.state.begun) this.playSeq(i, 0);
+  }
+
+  playSeq(i, idx) {
+    const seq = this.SEQ[i];
+    if (idx >= seq.length) {
+      this.setState({ narrating: false });
+      if (this.props.autoAdvance ?? false) this.timers.push(setTimeout(() => this.next(), 1400));
+      return;
+    }
+    const a = this.audioEls && this.audioEls[seq[idx]];
+    if (!a) { this.setState({ narrating: false }); return; }
+    this.setState({ narrating: true });
+    try { a.currentTime = 0; } catch (e) {}
+    a.onended = () => {
+      const g = this.GAP[seq[idx]] || 0;
+      this.timers.push(setTimeout(() => this.playSeq(i, idx + 1), g));
+    };
+    a.play().catch(() => {});
+  }
+
+  next() {
+    if (!this.scrollEl) return;
+    const i = Math.min(7, this.state.active + 1);
+    this.scrollEl.scrollTo({ top: i * this.scrollEl.clientHeight, behavior: 'smooth' });
+  }
+
+  begin() {
+    if (this.state.begun) return;
+    Object.entries(this.audioEls || {}).forEach(([n, a]) => {
+      if (n === 's0') return;
+      try {
+        a.muted = true;
+        const p = a.play();
+        if (p) p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; });
+      } catch (e) { a.muted = false; }
+    });
+    this.setState({ begun: true }, () => this.runSlide(0));
+  }
+
+  onScroll(e) {
+    if (this.scrollPending) return;
+    this.scrollPending = true;
+    requestAnimationFrame(() => {
+      this.scrollPending = false;
+      const el = this.scrollEl; if (!el) return;
+      const i = Math.max(0, Math.min(7, Math.round(el.scrollTop / el.clientHeight)));
+      if (i !== this.state.active) this.enterSlide(i);
+    });
+  }
+
+  renderVals() {
+    const b = this.state.beats, cs = this.state.counters;
+    const lang = this.state.lang || 'en';
+    const t = this.T[lang];
+    const HIDE = 'opacity:0;transform:translateY(26px)', SHOW = 'opacity:1;transform:translateY(0px)';
+    const PHIDE = 'opacity:0;transform:scale(.55)', PSHOW = 'opacity:1;transform:scale(1)';
+    const r = {};
+    ['s0logo', 's0title', 's0thesis', 's1cur', 's1arrow', 's1new', 's1tail', 's2gen', 's2chip', 's2left', 's2right', 's2conv', 's2tag', 's3kwp', 's3panel', 's3inv', 's3formula', 's4warn', 's4trick', 's4lies', 's4flash', 's4notest', 's5years', 's5fail', 's5prov', 's5sub', 's6msg', 's6img', 's6stat', 's6badges', 's6photo', 's7lead', 's7price', 's7pay', 's7warr', 's7cta'].forEach(k => { r[k] = b[k] ? SHOW : HIDE; });
+    ['s1badge', 's3badge', 's4rm50', 's4x12', 's4x20', 's4badge', 's6r1', 's6r2', 's6r3', 's6r4', 's6c1', 's6c2', 's6c3', 's6c4'].forEach(k => { r[k] = b[k] ? PSHOW : PHIDE; });
+    r.s5l1 = (b.s5l1 && !b.s5qonly) ? SHOW : HIDE;
+    r.s5l2 = (b.s5l2 && !b.s5qonly) ? SHOW : HIDE;
+    r.s5q = b.s5qonly ? SHOW : HIDE;
+    const c = {
+      bill: Math.round(cs.bill), nb: Math.round(cs.nb), pct: Math.round(cs.pct),
+      gen: Math.round(cs.gen), nb2: Math.round(cs.nb2), kwp: Number(cs.kwp).toFixed(2),
+      loss: Math.round(cs.loss).toLocaleString('en-US'), proj: Math.round(cs.proj),
+      price: Math.round(cs.price).toLocaleString('en-US')
+    };
+    const dots = [];
+    for (let i = 0; i < 8; i++) {
+      const on = i === this.state.active;
+      dots.push({ s: 'width:6px;border-radius:99px;transition:all .4s ease;height:' + (on ? '22px' : '6px') + ';background:' + (on ? '#F2B23E' : 'rgba(255,255,255,.22)') });
+    }
+    return {
+      r, c, dots, t,
+      begin: () => this.begin(),
+      onScroll: e => this.onScroll(e),
+      setScroll: el => { this.scrollEl = el; },
+      tapOp: this.state.begun ? 0 : 1,
+      landOp: this.state.lang ? 0 : 1,
+      landPe: this.state.lang ? 'none' : 'auto',
+      chooseEn: () => this.choose('en'),
+      chooseZh: () => this.choose('zh'),
+      logoOp: this.state.active !== 0 ? 1 : 0,
+      presentOp: (this.state.begun && this.state.narrating) ? 1 : 0,
+      nextArrowOp: (this.state.begun && !this.state.narrating && this.state.active < 7) ? 1 : 0,
+      flowOp: b.s2flow ? 1 : 0,
+      qBlockOp: b.s5years ? 0 : 1,
+      yearsOp: (b.s5years && !b.s5prov) ? 1 : 0,
+      provOp: b.s5prov ? 1 : 0,
+      fireOp: b.s5fire ? 1 : 0,
+      dimOp: b.s5dim ? (b.s5prov ? 0.25 : 0.5) : 0,
+      ctaAnim: b.s7cta ? 'animation:ctaPulse 2.2s ease-in-out infinite' : '',
+      showCap: !!(this.props.captions ?? false),
+      capText: (lang === 'zh' ? this.NARR_ZH : this.NARR_EN)[this.state.active]
+    };
+  }
+}
+</script>
+</body>
+</html>

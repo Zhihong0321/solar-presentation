@@ -1,0 +1,11 @@
+node_modules
+.next
+.DS_Store
+*.log
+*.zip
+.env.local
+scratch/
+web/.next
+web/node_modules
+web/.env.local
+web/*.tsbuildinfo
