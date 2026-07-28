@@ -25,8 +25,19 @@ function getMinimaxApiKey(): string | null {
   return null;
 }
 
-export async function getOrGenerateTTS(text: string, voiceId = "English_expressive_narrator"): Promise<{ url: string; cached: boolean }> {
-  const hash = crypto.createHash("sha256").update(`${voiceId}:${text.trim()}`).digest("hex").slice(0, 16);
+export async function getOrGenerateTTS(
+  text: string,
+  voiceId?: string,
+): Promise<{ url: string; cached: boolean }> {
+  const isChinese = /[\u4e00-\u9fa5]/.test(text);
+  const effectiveVoiceId =
+    voiceId || (isChinese ? "presenter_male" : "English_expressive_narrator");
+
+  const hash = crypto
+    .createHash("sha256")
+    .update(`${effectiveVoiceId}:${text.trim()}`)
+    .digest("hex")
+    .slice(0, 16);
   const fileName = `tts_${hash}.mp3`;
   const relativePath = path.join("narration", "cache", fileName);
 
@@ -51,7 +62,7 @@ export async function getOrGenerateTTS(text: string, voiceId = "English_expressi
     text: text.trim(),
     stream: false,
     voice_setting: {
-      voice_id: voiceId,
+      voice_id: effectiveVoiceId,
       speed: 1.0,
       vol: 1.0,
       pitch: 0,
