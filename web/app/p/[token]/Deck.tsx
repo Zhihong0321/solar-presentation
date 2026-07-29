@@ -66,6 +66,9 @@ export default function Deck({ data }: { data: PresentationData }) {
   // Mirrors narrationDoneRef but as state, purely to drive the "scroll
   // down" cue below — the ref stays the source of truth the lock reads.
   const [canAdvance, setCanAdvance] = useState(false);
+  // Slides whose narration has already played to completion once. Revisiting
+  // one of these must not replay audio and must not re-lock scrolling.
+  const visitedSlides = useRef<Set<number>>(new Set());
   const copy = START_COPY[lang];
 
   // 3s loading beat on the cover, purely cosmetic — gives the prefetch
@@ -151,14 +154,24 @@ export default function Deck({ data }: { data: PresentationData }) {
     let cancelled = false;
     let audio: HTMLAudioElement | null = null;
     let index = 0;
+
+    // Already-visited slide: no replay, no scroll lock — free navigation.
+    if (visitedSlides.current.has(active)) {
+      narrationDoneRef.current = true;
+      setCanAdvance(true);
+      return;
+    }
+
     narrationDoneRef.current = sequence.length === 0;
     setCanAdvance(narrationDoneRef.current);
+    if (sequence.length === 0) visitedSlides.current.add(active);
 
     const playNext = async () => {
       if (cancelled) return;
       if (index >= sequence.length) {
         narrationDoneRef.current = true;
         setCanAdvance(true);
+        visitedSlides.current.add(active);
         return;
       }
 
