@@ -44,9 +44,9 @@ export default async function PresentationPage({
 
   logVisit({
     token,
-    invoiceId: data.invoice_id,
-    invoiceNumber: data.invoice_number,
-    customerName: data.customer_name,
+    invoiceId: data.shareToken,
+    invoiceNumber: data.invoiceNumber || undefined,
+    customerName: data.customerName || undefined,
     ip,
     userAgent,
     referer,
