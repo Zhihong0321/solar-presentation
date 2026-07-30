@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { getInvoiceByToken } from "@/lib/invoice";
+import { logVisit } from "@/lib/activityLog";
 import Deck from "./Deck";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +35,22 @@ export default async function PresentationPage({
       </div>
     );
   }
+
+  // Log visitor activity
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || undefined;
+  const userAgent = headersList.get("user-agent") || undefined;
+  const referer = headersList.get("referer") || undefined;
+
+  logVisit({
+    token,
+    invoiceId: data.invoice_id,
+    invoiceNumber: data.invoice_number,
+    customerName: data.customer_name,
+    ip,
+    userAgent,
+    referer,
+  }).catch((err) => console.error("Visit logging failed:", err));
 
   return <Deck data={data} />;
 }
